@@ -1,2 +1,1 @@
-let Kingchop = require('./kingchop.js')
-module.exports = Kingchop
+module.exports = require('./kingchop.js')
