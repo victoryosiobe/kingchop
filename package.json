@@ -1,7 +1,7 @@
 {
   "name": "kingchop",
-  "version": "1.0.3",
-  "description": "A text tokenizing library that handles strings, by tokenizing them into arrays, depending on what to look out for, like sentences.",
+  "version": "1.0.4",
+  "description": "A text tokenizing library that handles strings, by tokenizing them into arrays, depending on what to look out for, like sentences, paragraphs, words...",
   "main": "index.js",
   "scripts": {
     "comment": " \"test\": \"mocha\" tests.js"
@@ -24,7 +24,7 @@
     "easy text tokenizer"
   ],
   "comment-highlight": [
-    "patches and documentation conflicts have been corrected in version 1.0.3, making it the best version to start with."
+    "patches and documentation conflicts have been corrected in version 1.0.4, making it the best version to start with."
     ],
   "comment": {
     "type": "module",

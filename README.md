@@ -332,7 +332,28 @@ console.log(chopper2.toSentence(string));- //results below
   'It can render results in an average of less than 3 milli seconds.'
 ]*/
 ```
+##### **showNonWords**
 
+**Default**: true.
+
+**Purpose**: this option is meant for the `toWord()` method. It lets result contain non-word characters.
+
+**More**: if true, this option will let the non-words remain in result, if false, it removes all non-words in result, except single quotes that gives words like, don't, doesn't... meaning.
+
+**Value**: it only accepts 2 values, true or false.
+
+**Usage**: 
+
+``` node.js
+//after importing or requiring Kingchop.
+
+const string = 'You're a great programmer. You don't have to feel it!!';
+const chopper = new Kingchop({showNonWords: false});
+console.log(chopper.toWord(string)); //["You're","a","great","programmer","You","don't","have","to","feel","it"]
+
+const chopper2 = new Kingchop({showNonWords: true});
+console.log(chopper2.toWord(string)); //["You're","a","great","programmer",".","You","don't","have","to","feel","it","!","!"]
+```
 ---
 ##### **levelUp** **coming soon*
 
@@ -369,20 +390,85 @@ const chopper = new Kingchop();
 console.log(chopper.toSentence(string)); //returns arrays of sentences.
 ```
 
+**Note**:
+
+The following option do not apply to the `toWord()` method:
+
+- showNonWords
+
 ---
 #### **`toParagraph(string)`** **coming soon*
 
-This method is one that breaks text into detected paragraphs arrays. It will use those parameters for initializing, to offsets rules guiding it. It's going to be a standard method of **kingchop**.
+This method is one that breaks text into detected paragraphs arrays. It uses those parameters for initializing, to offsets rules guiding it. It's a standard method of **kingchop**.
+
+**Example Of Usage**:
+
+```node.js
+//after importing or requiring Kingchop.
+const string = `Do you know that the toWord() method was launched at version 1.0.4 of the Kingchop library?
+                
+                No I didn't.
+                
+                Okay, go check it out!
+                Alright, but have all the coming soon been released?
+                
+                Na! Not yet. But some of them have been released
+                
+                Cool!`
+const chopper = new Kingchop();
+console.log(chopper.toParagraph(string)); //["Do you know that the toWord() method was launched at version 1.0.4 of the Kingchop library?","No I didn't.","Okay, go check it out!","Alright, but have all the coming soon been released?","Na! Not yet. But some of them have been released","Cool!"]
+```
+**Note**:
+
+The following options do not apply to the `toParagraph()` method:
+
+- addToExceptions
+- useExceptions
+- actOnEnclosers
+- showDelimeters
+- showNonWords
 
 ---
+#### **`toWord(string)`**
+
+This method is one that breaks text into words, all in arrays. It uses those parameters for initializing, to offsets rules guiding it. It's a standard method of **kingchop**.
+
+`toWord()` is able to return words like don't, doesn't, and anything with single quotes, together. This is one of the most unconsidered thing in other libraries.
+
+**Example Of Usage**:
+
+```node.js
+//after importing or requiring Kingchop.
+const string = 'Do you know that the toWord() method was launched at version 1.0.4 of the Kingchop library? No I didn't.'
+const chopper = new Kingchop();
+console.log(chopper.toWord(string)); //["Do","you","know","that","the","toWord","(",")","method","was","launched","at","version","1",".0",".4","of","the","Kingchop","library","?","No","I","didn't","."]
+```
+**Note**:
+
+The following options do not apply to the `toWord()` method:
+
+- addToExceptions
+- useExceptions
+- actOnEnclosers
+- showDelimeters
+- correct
+
+The rest options work well for it. But the **showNonWords** option which is by default true, causes all non-words to stay in results. If set to false, it removes all non-words only for the `toWord()` method, except single quotes that gives words like, don't, doesn't... meaning.
+
+**Open Question**: should this method handle numbers with periods too? I don't really like seeing this `"1", ".0", ".4"` in the results from the **Example Of Usage**. Should they be together? But they're not words you know? 😅
+
+---
+
 #### **`toSubSentence(string)`** **coming soon*
 
 This method is one that breaks text into sub sentences arrays. Sub sentences delimeters will be ':,;', some others, and sentences delimeters too will be used. Yes, enclosers are counted as sub sentences. It will use those parameters for initializing, to offsets rules guiding it. It's going to be a standard method of **kingchop**.
 
----
-#### **`toWord(string)`** **coming soon*
+**Note**:
 
-This method is one that breaks text into words, all in arrays. It will use those parameters for initializing, to offsets rules guiding it. It's going to be a standard method of **kingchop**.
+The following option do not apply to the `toSubSentence()` method:
+
+- showNonWords
+
 
 # Error Codes
 Kingchop returns verbose errors when things didn't go well. You get error codes, reasons for error, correction to errors, and a link to this document for more information.
@@ -439,11 +525,9 @@ console.log(chopper.correctText(string), 'corrected text with the Kingchop libra
 
 # Coming Soon
 1. **Compatibility with browsers, meaning, you can use it for frontend development, not just backend alone.**
-2. **Paragraph Tokenization.**
-3. **Sub Sentence Tokenization.**
-4. **Word Tokenization.**
-5. **The levelUp option.**
-6. **The python version of Kingchop ⚔️.**
+2. **Sub Sentence Tokenization.**
+3. **The levelUp option.**
+4. **The python version of Kingchop ⚔️.**
 
 # Thanks
 
