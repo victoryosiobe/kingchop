@@ -65,7 +65,7 @@ const chopper = new Kingchop();
 **OR**
 
 ``` node.js
-import Kingchop from 'kingchop'
+import Kingchop from './the-folder-of-kingchop'
 const chopper = new Kingchop();
 ```
 
@@ -76,7 +76,7 @@ Kingchop is class based, which means you should require or import it as above, t
 **Example:**
 
 ```node.js
-const string = 'Tech! Tech! Tech! Don't you want to become a doctor son? Treat people.....you know? Because, I don't understand these jargons you're writing there. Just go to sleep.';
+const string = `Tech! Tech! Tech! Don't you want to become a doctor son? Treat people.....you know? Because, I don't understand these jargons you're writing there. Just go to sleep.`;
 const chopper = new Kingchop();
 console.log(chopper.toSentence(string)); //results below 
 /*[
@@ -127,7 +127,7 @@ Here are the default settings, with purposes, usage, values and examples:
 ``` node.js
 //after importing or requiring kingchop.
 
-const string = 'Do you know about KINGCHOP? And do you know what it can do?'
+const string = `Do you know about KINGCHOP? And do you know what it can do?`
 const chopper = new Kingchop({lowcase: true});
 console.log(chopper.toSentence(string)); //[ 'do you know about kingchop?', 'and do you know what it can do?' ]
 
@@ -153,7 +153,7 @@ console.log(chopper2.toSentence(string)); //[ 'Do you know about KINGCHOP?', 'An
 
 ``` node.js
 //after importing or requiring kingchop.
-let string = 'You should use inc. instead of co. on that website. The one that has .org domain. Then you inform Dr. Jarvis, Prof. Einstein, and Mr. Telsa about it.';
+let string = `You should use inc. instead of co. on that website. The one that has .org domain. Then you inform Dr. Jarvis, Prof. Einstein, and Mr. Telsa about it.`;
 const chopper = new Kingchop({addToExceptions: ['org', 'inc', 'co']});
 console.log(chopper.toSentence(string)); //results below
 /*[
@@ -177,7 +177,7 @@ console.log(chopper.toSentence(string)); //results below
 ``` node.js
 //after importing or requiring kingchop.
 
-let string = 'You should use inc. instead of co. on that website. The one that has .org domain. Then you inform Dr. Jarvis, Prof. Einstein, and Mr Telsa, about it.';
+let string = `You should use inc. instead of co. on that website. The one that has .org domain. Then you inform Dr. Jarvis, Prof. Einstein, and Mr Telsa, about it.`;
 const chopper = new Kingchop({useExceptions: ['org', 'inc', 'co']});
 console.log(chopper.toSentence(string)); // results below
 /*[
@@ -238,7 +238,7 @@ console.log(chopper2.toSentence(string)); //results below
 
 ``` node.js
 //after importing or requiring Kingchop.
-const string = 'You're a great progra!mmer. You don't have to feel it!!';
+const string = `You're a great progra!mmer. You don't have to feel it!!`;
 const chopper = new Kingchop({showDelimeters: false});
 console.log(chopper.toSentence(string)); //[ "You're a great progra!mmer", "You don't have to feel it" ]
 
@@ -287,10 +287,10 @@ It corrects spaces from delimeters.
 
 const string = 'You're a great programmer          . You don't have to feel it     !            !';
 const chopper = new Kingchop({correct: false});
-console.log(chopper.toSentence(string)); //['You're a great programmer          .', 'You don't have to feel it     !            !'];
+console.log(chopper.toSentence(string)); //["You're a great programmer          .", "You don't have to feel it     !            !"];
 
 const chopper2 = new Kingchop({correct: true});
-console.log(chopper2.toSentence(string)); //['You're a great programmer.', 'You don't have to feel it!!']
+console.log(chopper2.toSentence(string)); //["You're a great programmer."", "You don't have to feel it!!"]
 ```
 ---
 ##### **returnStatus** 
@@ -308,7 +308,7 @@ console.log(chopper2.toSentence(string)); //['You're a great programmer.', 'You 
 ``` node.js
 //after importing or requiring kingchop.
 
-const string = 'Kingchop is very fast. It can render results in an average of less than 3 milli seconds.'
+const string = `Kingchop is very fast. It can render results in an average of less than 3 milli seconds.`;
 const chopper = new Kingchop({returnStatus: true});
 const refinedText = chopper.toSentence(string);
 console.log(refinedText); //results below
@@ -347,7 +347,7 @@ console.log(chopper2.toSentence(string));- //results below
 ``` node.js
 //after importing or requiring Kingchop.
 
-const string = 'You're a great programmer. You don't have to feel it!!';
+const string = `You're a great programmer. You don't have to feel it!!`;
 const chopper = new Kingchop({showNonWords: false});
 console.log(chopper.toWord(string)); //["You're","a","great","programmer","You","don't","have","to","feel","it"]
 
@@ -439,7 +439,7 @@ This method is one that breaks text into words, all in arrays. It uses those par
 
 ```node.js
 //after importing or requiring Kingchop.
-const string = 'Do you know that the toWord() method was launched at version 1.0.4 of the Kingchop library? No I didn't.'
+const string = `Do you know that the toWord() method was launched at version 1.0.4 of the Kingchop library? No I didn't.`
 const chopper = new Kingchop();
 console.log(chopper.toWord(string)); //["Do","you","know","that","the","toWord","(",")","method","was","launched","at","version","1",".0",".4","of","the","Kingchop","library","?","No","I","didn't","."]
 ```
@@ -479,7 +479,7 @@ Kingchop returns verbose errors when things didn't go well. You get error codes,
 
 ``` node.js
 const Kingchop = require('kingchop');
-let string = 'Kingchop demo!'
+let string = `Kingchop demo!`
 const chopper = new Kingchop({returnStatus: 'wrong value'});
 console.log(chopper.toSentence(string));
 //When you run the code above. You would get this.
@@ -516,7 +516,7 @@ It removes unnecessary spaces between words and delimiters, and delimeters and d
 
 ``` node.js
 const Kingchop = require('kingchop');
-const string = 'hi ! but ? them   !    !   !';
+const string = `hi ! but ? them   !    !   !`;
 const chopper = new Kingchop();
 console.log(chopper.correctText(string), 'corrected text with the Kingchop library');
 ```
