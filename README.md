@@ -355,19 +355,69 @@ const chopper2 = new Kingchop({showNonWords: true});
 console.log(chopper2.toWord(string)); //["You're","a","great","programmer",".","You","don't","have","to","feel","it","!","!"]
 ```
 ---
-##### **levelUp** **coming soon*
+##### **levelUp**
 
-**Default**: true.
+**Default**: true, 30.
 
-**Purpose**: this option tries to make a good guess on what's to be a sentence with the length of the input.
+**Purpose**: this option tries to make a good guess on what's to be a sentence with the length of the input. It is meant for `toSentence()` method.
 
 **More**: if true, this option will use the length of the total string passed in, to find the minimum % length to use to decide what length of sentence is a sentence. And after all breaks into arrays, it checks each of them to find if any is less than or equal to the minimum %, if there are, it joins that array with previous array. 
 
-**Note**: if status is false, like with returnStatus, or if no match, or breaks or separations into array is done, this will fail, causing it not to be useful.
+With true as it is by default, it tries to guess if an array is a sentence or not, using Math.log as a balancer for scales.
 
-**Value**: it only accepts 2 values, true or false. With true as it will be default, it tries to guess if an array is a sentence or not. With false, this fails.
+Math.log helps reduces the rate at which the scale increases, making it easier to get almost same scale on small text and large ones. In other words, instead of using percentage to measure, we do that but with Math.log that slows the rate at which the scale changes.
 
-**Usage**: *coming soon.*
+For example, scale maybe 20 out of 100 on small text and it says, array values with 30 chars or less should not be a sentence, then that scale can reach 90 out of 100 when faced with large text. Meaning, longer sentences would be treated as "not a sentence".
+
+Math.log slows that scale down. With the above example, the large text scale may reach 25% out of 100. 
+
+With false, this fails.
+
+With numbers which indicates true, you can change the scale to taste. Default is 30, and the allowed values of number, ranges from > 0 to < 100. Outside that, you'll get an error.
+
+The higher the number, the less sensitive to small sentences. The lower, the more sensitive to small sentences.
+
+**Note**: if status is false, like with returnStatus, or if no match, or breaks or separations into array is done, this will fail, causing it not to be useful. Also, treat the number value, like a volume value.
+
+**Value**: it only accepts 3 values, true or false or numbers of range > 0 to < 100.
+
+**Example of Usage**:
+``` node.js
+//after importing or requiring Kingchop.
+
+const string = `Okay. Okay. I understood what you said. It is just that I can't do it right now. I promise I will attend to it.`;
+const chopper = new Kingchop({levelUp: false});
+console.log(chopper.toSentence(string)); // results below
+/*['Okay.',
+   'Okay.',
+   'I understood what you said.',
+   "It is just that I can't do it right now.",
+   'I promise I will attend to it.'
+  ]
+*/
+const chopper2 = new Kingchop({levelUp: true});
+console.log(chopper2.toSentence(string)); //results below 
+/*['Okay. Okay. I understood what you said.',
+  "It is just that I can't do it right now.",
+  'I promise I will attend to it.']
+*/
+const chopper3 = new Kingchop({levelUp: 10});
+console.log(chopper3.toSentence(string)); //results below 
+/*[
+  "Okay. Okay. I understood what you said. It is just that I can't do it right now.",
+  'I promise I will attend to it.'
+  ]
+*/
+const chopper4 = new Kingchop({levelUp: 99});
+console.log(chopper4.toSentence(string)); //results below 
+/*['Okay.',
+   'Okay.',
+   'I understood what you said.',
+   "It is just that I can't do it right now.",
+   'I promise I will attend to it.'
+]
+*/
+```
 
 ---
 
@@ -452,6 +502,7 @@ The following options do not apply to the `toWord()` method:
 - actOnEnclosers
 - showDelimeters
 - correct
+- levelUp
 
 The rest options work well for it. But the **showNonWords** option which is by default true, causes all non-words to stay in results. If set to false, it removes all non-words only for the `toWord()` method, except single quotes that gives words like, don't, doesn't... meaning.
 
@@ -501,7 +552,7 @@ Now, lets hit some of the error codes.
 
 **E03**: Indicates error happened within the library causing it to fail.
 
-**E04**: Indicates an unsupported parameter meant for maintainers of this library.
+**E04**: Indicates an unsupported parameter or method instated by maintainers of this library.
 
 # Extras
 
@@ -526,8 +577,7 @@ console.log(chopper.correctText(string), 'corrected text with the Kingchop libra
 # Coming Soon
 1. **Compatibility with browsers, meaning, you can use it for frontend development, not just backend alone.**
 2. **Sub Sentence Tokenization.**
-3. **The levelUp option.**
-4. **The python version of Kingchop ⚔️.**
+3. **The python version of Kingchop ⚔️.**
 
 # Thanks
 

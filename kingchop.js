@@ -8,10 +8,11 @@ try {
       this.actOnEnclosers = false
       this.correct = true
       this.showNonWords = true
+      this.levelUp = false
       this.returnStatus = false
       if (options) this.options = options
       if (this.options) {
-        const { addToExceptions, useExceptions, showDelimeters, lowcase, actOnEnclosers, correct, showNonWords, returnStatus } = this.options
+        const { addToExceptions, useExceptions, showDelimeters, lowcase, actOnEnclosers, correct, showNonWords, levelUp, returnStatus } = this.options
         if (addToExceptions) this.addExcepts = addToExceptions
         if (useExceptions) this.useExceptions = useExceptions
         if (showDelimeters === false) this.showDelimeters = showDelimeters
@@ -19,6 +20,7 @@ try {
         if (actOnEnclosers) this.actOnEnclosers = actOnEnclosers
         if (correct === false) this.correct = correct
         if (showNonWords === false) this.showNonWords = showNonWords
+        if (levelUp) this.levelUp = levelUp
         if (returnStatus) this.returnStatus = returnStatus
         this.#checkParams()
       }
@@ -82,6 +84,7 @@ try {
       try {
         let status = true
         text = this.#helpProcessInit(text, 'toSentence')
+        if (this.correct) text = this.#accessPublicInUseMethods(text, 'correctText') //correct text from here
         const processSentenceTokens = (text) => {
           const regDelimeters = /\.{2,}|\!{2,}|\?{2,}/g //strict delimiters match
           const regDelimetersExt = /(\.\s+|\!\s+|\?\s+)/g // match delimiters if space comes after
@@ -152,7 +155,7 @@ try {
                 continousDeli.map(value => text = text.replace(value, arrayBreakAt))
                 text = text.split(arrayBreakAt)
               }
-              text = this.#spaceOffAndTrim(text) //clear spaces and and trim
+              text = this.#spaceOffAndTrim(text) //clear spaces
             } else status = false
           }
           /*Section: 2. End*/
@@ -162,7 +165,6 @@ try {
           if (exceptsMatch) text = fixExceptions(text) //put back exceptions 
           if (enclosersMatch) text = fixEnclosers(text) //put back enclosers
           if (ellipsMatch) text = fixEllips(text) //put back ellips content
-          text = Array.isArray(text) ? this.#spaceOffAndTrim(text) : text //if string, this.correct will trim it. further trim. things like enclosers may appear at last array, after triming and spacing has been done. So we do it again.
 
           function fixNumbListForm(text) { //text could be string or array, depending on whats true above
             if (Array.isArray(text)) {
@@ -209,10 +211,17 @@ try {
           let pileUpArrays = text.map(value => processSentenceTokens(value))
           text = pileUpArrays.flat()
         } else text = processSentenceTokens(text)
+        text = Array.isArray(text) ? this.#spaceOffAndTrim(text) : text = this.#andTrim(text) //if string, trim. Well, enclosers may comeback with extra spaces, so we must here. 
+
+        // Didn't trim in this whole function because of levelUp
+        if (this.levelUp) {
+          const res = this.#levelUp(text, this.levelUp)
+          text = res.value
+          status = res.stat
+        }
         return this.#returnMan(text, status)
       } catch (error) {
-        throw new Error(error)
-        //    throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E03.\nCAUSE: "${error.name}".\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
+        throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E03.\nCAUSE: "${error.name}".\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
       }
     }
     toParagraph(text) {
@@ -264,14 +273,70 @@ try {
 
       return this.#returnMan(text, status)
     }
-    #levelUp() {
-      throw new Error(`\nKINGCHOP ERROR\nERROR CODE: E04.\nREASON: Kingchop is causing the error on purpose. This very common.\nCAUSE: You tried to access a "coming soon" method.\nCORRECTION: Do not call this method until it is fully available.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-      //coming soon
+    #levelUp(text, num) {
+      let isNowBackToString = false
+      if (((typeof num !== 'number') && (typeof num !== 'boolean')) && this.levelUp) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E01.\nREASON: Invalid Parameter Value.\nCAUSE: You inputed: ${num} as the levelUp option of the Kingchop Instance.\nCORRECTION: Required value is true, false, or the number for the degree of percentage to work with.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
+      if (num > 100 || num < 0 || num === 100 || num === 0) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E01.\nREASON: Invalid Parameter Value.\nCAUSE: You inputed: ${num} as the levelUp option of the Kingchop Instance.\nCORRECTION: Required value is true, false, or the number for the degree of percentage to work with. It must not be 0 or lesser, or 100 or greater in value. It must be between, 1...99.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
+      if (typeof text === 'string') return { value: text, stat: isNowBackToString } //operations were not done on the text
+      //  const len = text.length
+      const totalLen = text.reduce((acc, val) => {
+        return acc + val.length
+      }, 0)
+      // const avrTotalLen = totalLen / len
+      runner()
+
+      function runner() {
+        let i = 0
+        while (i < text.length) { //while used because of unstability of text length
+          const currValue = text[i]
+          const nextValue = nextFn(text, i).nextValue
+          const nextIndex = nextFn(text, i).nextIndex
+          if (nextIndex !== undefined) {
+            if (i === 0) {
+              //first value
+              if (thresTest(currValue)) {
+                text[0] = currValue + ' ' + nextValue
+                text.splice(nextIndex, 1)
+                //no incrementing. Since next value has been removed and added to current one
+                //we use them as new value, and the next to new value may pass the test, and so on.
+                //if fail, we increment
+                isNowBackToString = true
+              } else i++
+            }
+            else {
+              isNowBackToString = false
+              if (thresTest(nextValue)) { //test on nextValue
+                text[i] = currValue + ' ' + nextValue //make currValue and nextValue the current value
+                text.splice(nextIndex, 1)
+                //no incrementing. Since next value has been removed and added to current one
+                //we use them as new value, and the next to new value may pass the test, and so on.
+                //if fail, we increment
+              } else i++
+            }
+          } else break
+          //for action with last text array value, the prev value to last one
+          //will add the last to itself. thereby leaving no last readable value (undefined). We will use nextIndex to check
+          //then exit loop. This will handle situations were all values add themselves. leading to 1 string.
+          //we will also signal with isNowBackToString if that happens, to say, no operations were done on toSentence input string text
+          //cos, it turned back to string again
+
+          function nextFn(arr, index) {
+            return arr[index + 1] ? { nextValue: arr[index + 1], nextIndex: index + 1 } : { nextValue: '', nextIndex: void(0) }
+          }
+
+          function thresTest(value) {
+            const choice = typeof num !== 'boolean' ? num : 30
+            const scale = Math.log(totalLen + 1); // Balanced scaling factor
+            const ratio = ((scale / value.length) * 100) > choice
+            return ratio
+          }
+        }
+      }
+      return { value: text, stat: isNowBackToString }
     }
     #helpProcessInit(text, whoami) { //helps in checking param, correcting text, and lowercasing it
       if (!(typeof text === 'string')) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E02.\nREASON: The parameter of the method ${whoami}() is invalid.\nCAUSE: You inputed: "${text}" as the parameter of the ${whoami}() method.\nCORRECTION: The ${whoami}() method only accepts a value, a string.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
       if (/^\s*$/.test(text)) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E02.\nREASON: The parameter of the method ${whoami}() is invalid.\nCAUSE: The parameter of the ${whoami}() method was an empty string.\nCORRECTION: The ${whoami}() method only accepts a value, a string.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-      if (this.correct && (whoami !== 'toWord' && whoami !== 'toParagraph')) text = this.#accessPublicInUseMethods(text, 'correctText') //correct text if correct opt is set to true, and the next is for devMode
       if (this.lowcase) text = text.toLowerCase()
       return text
     }
@@ -283,11 +348,12 @@ try {
       let result
       if (whoami === 'correctText' && this.correct) result = this.correctText(value)
       else result = value
-      if (this.returnStatus === true && this.correct) return result.value //only value from public method is needed
-      else result = value
-      return result
+      if (this.correct && this.returnStatus === true) return result.value //only value from public method is needed
+      else return result
     }
     #spaceOffAndTrim(text) { return text.map(e => e = e.trim()).filter(e => e !== '') }
+    #spaceOff(text) { return text.filter(e => e !== '') }
+    #andTrim(text) { return text.trim() }
   }
   module.exports = Kingchop
 }

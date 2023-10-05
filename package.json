@@ -1,6 +1,6 @@
 {
   "name": "kingchop",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A text tokenizing library that handles strings, by tokenizing them into arrays, depending on what to look out for, like sentences, paragraphs, words...",
   "main": "index.js",
   "scripts": {
@@ -24,8 +24,8 @@
     "easy text tokenizer"
   ],
   "comment-highlight": [
-    "patches and documentation conflicts have been corrected in version 1.0.4, making it the best version to start with."
-    ],
+    "patches and documentation conflicts have been corrected in version 1.0.5, making it the best version to start with."
+  ],
   "comment": {
     "type": "module",
     "module": "./kingchop.js",
