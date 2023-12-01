@@ -1,7 +1,7 @@
 ### Quick Links
 
 - [Kingchop ⚔️](#kingchop)
-- [Why Kingchop?](#why-kingchop)
+- [Why Even Use Kingchop?](#why-should-i-use-kingchop)
 - [How To Use?](#how-to-use)
 - [Parameters](#parameters)
   - [Options](#options)
@@ -11,21 +11,29 @@
 - [Coming Soon](#coming-soon)
 - [Thanks](#thanks)
 - [Support](#support)
-
+- [Change Log](./CHANGELOG.md)
 
 # **Kingchop**
 
-Kingchop ⚔️ is a node.js English based library used for tokenizing text (chopping text). It uses rules for tokenizing, and you can adjust these rules as you please.
+Kingchop ⚔️ is a JavaScript English based library for tokenizing text (chopping text). It uses vast rules for tokenizing, and you can adjust them easily.
 
-## Why Kingchop?
+## Why Should I Use Kingchop?
 
 Kingchop is built for **flexibility**, **stability**, **ease** and **simplicity** unlike other libraries.
 
-I too was tired of searching for tokenizing libraries, especially for tokenizing sentences to array, so I built this library.
+I too was tired of searching for tokenizing libraries, especially for tokenizing sentences to array, so I have built this library.
 
-With kingchop, urls, ellips like **...**, **..........**, and enclosers like **(), '', ``, ""** are handled properly.
+With kingchop, urls, ellips like **...**, **..........**, and enclosers like **(), '', ``, ""** are handled properly, and words like **don't**, **couldn’t** are well handled.
 
-Kingchop is also able to handle multiple lines of text, and delimeters like '!?.'. In this text `'Anyone??? I just need assistance... .. Okay good!!! !'`, if tokenizing to sentence arrays, by default, Kingchop returns `[ 'Anyone???', 'I just need assistance.....', 'Okay good!!!!' ]`. Slightly different? Because, KingChop tries to [correct](#correct) the text.
+Kingchop is also able to handle multiple lines of text (paragraphs), and delimeters like **!?.**. In this text `Anyone??? I just need assistance... .. Okay good!!! !  Hold on tight, let me go get the glue. What a sticky situation!`, if tokenizing to sentence arrays, by default, Kingchop returns,
+```
+[
+    'Anyone??? I just need assistance..... Okay good!!!!',
+    'Hold on tight, let me go get the glue.',
+    'What a sticky situation!'
+]
+  ```
+Slightly different? Because, KingChop tries to [correct](#correct) the text.
 
 Kingchop lets users change other settings easily.
 
@@ -65,7 +73,7 @@ const chopper = new Kingchop();
 **OR**
 
 ``` node.js
-import Kingchop from './the-folder-of-kingchop'
+import Kingchop from 'kingchop'
 const chopper = new Kingchop();
 ```
 
@@ -80,9 +88,7 @@ const string = `Tech! Tech! Tech! Don't you want to become a doctor son? Treat p
 const chopper = new Kingchop();
 console.log(chopper.toSentence(string)); //results below 
 /*[
-    'Tech!',
-    'Tech!',
-    'Tech!',
+    'Tech! Tech! Tech!',
     "Don't you want to become a doctor son?",
     'Treat people.....you know?',
     "Because, I don't understand these jargons you're writing there.",
@@ -112,17 +118,18 @@ The object can take in multiple options, or settings.
 const chopper = new Kingchop({lowcase: true, addToExceptions: ['org', 'inc', 'co'] ...});
 ```
 
-Here are the default settings, with purposes, usage, values and examples:
+**Below are the default settings, with purposes, usage, accepted values and examples:**
 
-#####  **lowcase** 
+###  **lowcase** 
 
 **Default**: false.
 
 **Purpose**: To change the input to lowercase text, resulting in outputting in lowcase format.
 
-**Value**: It only accepts 2 values, true or false. With false, no lowcasing is done.
+**Value**: It only accepts 2 types of value, true or false. With false, no lowcasing is done.
 
 **Usage**: 
+
 
 ``` node.js
 //after importing or requiring kingchop.
@@ -137,13 +144,14 @@ console.log(chopper2.toSentence(string)); //[ 'Do you know about KINGCHOP?', 'An
 ```
 
 ---
-##### **addToExceptions** 
+
+### **addToExceptions** 
 
 **Default**: null. 
 
-**Purpose**: Exceptions are words, or abrevations that ends or begin with delimiters like '!?.'. This option adds more exceptions to the existing exceptions after filtering possible duplicates.
+**Purpose**: Exceptions are words, or abrevations that ends or begin with delimeters like '!?.'. This option adds more exceptions to the existing exceptions after filtering possible duplicates.
  
-**Example**: in the string, 'Prof. Victory Osiobe', Prof there, is in the existing exceptions list, but what they do is that they offset the rules, by ignoring them and the delimiters surrounding them, helping to not break by the delimiters that starts or follow them.
+**Example**: in the string, 'Prof. Victory Osiobe', Prof there, is in the existing exceptions list, but what they do is that they offset the rules, by ignoring them and the delimeters surrounding them, helping to not break by the delimeters that starts or follow them.
 
 **More**: here are the list of existing exceptions, `['Dr', 'etc', 'Jr', 'M', 'Mgr', 'Mr', 'Mrs', 'Ms', 'Mme', 'Mlle', 'Prof', 'Sr', 'St', 'p', 'pp', 'pst', 'dj', 'po']`. There's no need to add the delimeters with them, as Kingchop takes care of that. For more coverage, they are set to case insensitive.
 
@@ -162,9 +170,11 @@ console.log(chopper.toSentence(string)); //results below
   'Then you inform Dr. Jarvis, Prof. Einstein, and Mr. Telsa, about it.'
 ]*/
 ```
+**Note**: this just adds more exceptions to existing exceptions, it doesn't turn off the use of existing exceptions.
 
 ---
-##### **useExceptions** 
+
+### **useExceptions** 
 
 **Default**: null.
 
@@ -183,56 +193,61 @@ console.log(chopper.toSentence(string)); // results below
 /*[
   'You should use inc. instead of co. on that website.',
   'The one that has .org domain.',
-  'Then you inform Dr.',
-  'Jarvis, Prof.',
-  'Einstein, and Mr.',
-  'Telsa, about it.'
+  'Then you inform Dr. Jarvis, Prof.',
+  'Einstein, and Mr. Telsa about it.'
 ]*/
 ```
 
+**Note**: the combination you still see is as result of the default [gravity](#gravity) option.
+
+This option just uses provided exceptions. **You can totally stop the use of existing exceptions, by using null for this option.**
+
 ---
-#####  **actOnEnclosers** 
+
+###  **actOnEnclosers**
 
 **Default**: false.
 
-**Purpose**: to make match and possibly break into arrays in enclosers like (), '', "", ``.
+**Purpose**: to make match and possibly break into arrays in enclosers like (), [], {}, <>.
 
 **More**: Kingchop uses set of rules to put strings into array form, but with this method, you may want the matches to be included within enclosers like brackets.
 
-**Value**: it only accepts 2 values, true or false. With false, no match, breaks or seperations happen within enclosers in results. With true, this causes matches which succeed on other text to succeed within enclosers.
+**Value**: it only accepts 2 types of value, true or false. With false, no match, chops or seperations happen within enclosers in results. With true, this causes matches which succeed on other text to succeed within enclosers.
 
 **Usage**: 
 
 ``` node.js
 //after importing or requiring kingchop.
 
-const string = `The site to go is www.github.com/victoryosiobe/kingchop (but if you want to read the README.md, I don't know. Wait, I do, just find that here: www.github.com/victoryosiobe/kingchop#README.md), that's where to get more info on 'Kingchop the text chopper! ⚔️'. Is there anything else you need sir?`;
+const string =`I feel it's harder to convert DC to AC, (through an standard inverter. Unlike AC to DC that requires diodes and capacitors) Oh well, I need to rest from these eletronics.`
 const chopper = new Kingchop({actOnEnclosers: false});
-console.log(chopper.toSentence(string)); //results below
-/*[
-  "The site to go is www.github.com/victoryosiobe/kingchop (but if you want to read the README.md, I don't know. Wait, I do, just find that here: www.github.com/victoryosiobe/kingchop#README.md), that's where to get more info on 'Kingchop the text chopper! ⚔️'.",
-  'Is there anything else you need sir?'
- ]*/
+console.log(chopper.toSentence(string)); //"I feel it's harder to convert DC to AC, (through an standard inverter. Unlike AC to DC that requires diodes and capacitors) Oh well, I need to rest from these eletronics."
   
 const chopper2 = new Kingchop({actOnEnclosers: true});
 console.log(chopper2.toSentence(string)); //results below
 /*[
-  "The site to go is www.github.com/victoryosiobe/kingchop (but if you want to read the README.md, I don't know.",
-  "Wait, I do, just find that here: www.github.com/victoryosiobe/kingchop#README.md), that's where to get more info on 'Kingchop the text chopper!",
-  "⚔️'.",
-  'Is there anything else you need sir?'
+  "I feel it's harder to convert DC to AC, (through an standard inverter.",
+  'Unlike AC to DC that requires diodes and capacitors) Oh well, I need to rest from these eletronics.'
 ]*/
 
 ```
 
+**Note**: it's difficult to detect enclosers like `"", ''`, which starts and ends with same character. `“”` is detected properly, but `‘’` which is multipurpose is an extra layer of difficulty, because it can be used as quotes, used to indicate shorten words, like: `don’t, ol’, rock ’n’ roll`. This creates a lot of imbalances.
+
+For now, Kingchop can handle 0 nests of same enclosers detected, and would not perform well if imbalances are found. Functions have been written to address nesting, just for enclosers that start and end with different characters. However, this multipurpose quotes, ‘’ and '', remain a problem.
+
+The issue where enclosers of same characters (for start and end, like '', "", ``) can't be accurately detected hasn't been resolved. No function has been implemented yet.
+
+The extraction function already built isn't utilized in the **Aurora, v1.0.6** update.
+
 ---
-#####  **showDelimeters** 
+###  **showDelimeters** 
 
 **Default**: true.
 
-**Purpose**: Normally, in other libraries, the array is formed by using delimiters, like '!?.', so those delimiters don't make it in the results. Well, this option if true, leaves the delimeters, instead of removing or using them.
+**Purpose**: Normally, in other libraries, the array is formed by using delimeters, like '!?.', so those delimeters don't make it in the results. Well, this option if true, leaves the delimeters, instead of removing or using them.
 
-**Value**: it only accepts 2 values, true or false. With true as default, it leaves the delimeters. With false, it uses the delimeters, hence, removing them.
+**Value**: it only accepts 2 types of value, true or false. With true as default, it leaves the delimeters. With false, it uses the delimeters, hence, removing them.
 
 **Usage**:
 
@@ -245,8 +260,10 @@ console.log(chopper.toSentence(string)); //[ "You're a great progra!mmer", "You 
 const chopper2 = new Kingchop({showDelimeters: true});
 console.log(chopper2.toSentence(string)); //[ "You're a great progra!mmer.", "You don't have to feel it!!" ]
 ```
+**Note**: this is possible using identifiers, so we act on them, not the text itself, since it is possible for identifiers to be inputed, an advanced escaper function has been built to escape and unescape these identifiers found in text, so nothing is confused.
+
 ---
-#####  **correct** 
+###  **correct** 
 
 **Default**: true.
 
@@ -276,34 +293,35 @@ He has the. domain.
 
 It corrects spaces from delimeters.
 
-**Value**: it only accepts 2 values, true or false. With true as default, Kingchop tries to correct the text. With false, text remains as inputed.
+**Value**: it only accepts 2 types of value, true or false. With true as default, Kingchop tries to correct the text. With false, text remains as inputed.
 
 **More**: You may need to use this elsewhere, like, just to correct text without Kingchop other functions. If so, check [Extras](#extras) section.
 
-**Usage**:
+**Example Of Usage**:
 
 ``` node.js
 //after importing or requiring Kingchop.
 
-const string = 'You're a great programmer          . You don't have to feel it     !            !';
+const string = `You're a great programmer          . You don't have to feel it     !            !`;
 const chopper = new Kingchop({correct: false});
 console.log(chopper.toSentence(string)); //["You're a great programmer          .", "You don't have to feel it     !            !"];
 
 const chopper2 = new Kingchop({correct: true});
-console.log(chopper2.toSentence(string)); //["You're a great programmer."", "You don't have to feel it!!"]
+console.log(chopper2.toSentence(string)); //["You're a great programmer .", "You don't have to feel it!!"]
 ```
+
 ---
-##### **returnStatus** 
+### **returnStatus** 
 
 **Default**: false.
 
-**Purpose**: when text is passed in, with standard methods, you may want to know if any seperations, or breaks, or splits were done. 
+**Purpose**: when text is passed in, with standard methods, you may want to know if any operations were done. 
 
 **More**: it returns the output of Kingchop in object form. It only returns 2 properties in object form: value, and status. `{value: 'is whatever was processed by Kingchop', status: true or false (if anything was done, 'true', if not, 'false')}`.
 
-**Value**: it only accepts 2 values, true or false. With true, Kingchop returns an object with 2 properties, value and status. With false, only processed text is returned.
+**Value**: it only accepts 2 types of value, true or false. With true, Kingchop returns an object with 2 properties, value and status. With false, only processed text is returned.
 
-**Usage**:
+**Example Of Usage**:
 
 ``` node.js
 //after importing or requiring kingchop.
@@ -312,10 +330,13 @@ const string = `Kingchop is very fast. It can render results in an average of le
 const chopper = new Kingchop({returnStatus: true});
 const refinedText = chopper.toSentence(string);
 console.log(refinedText); //results below
-/*{[
-  'Kingchop is very fast.',
-  'It can render results in an average of less than 3 milli seconds.'
-], true}*/
+/*{
+  value: [
+    'Kingchop is very fast.',
+    'It can render results in an average of less than 3 milli seconds.'
+  ],
+  status: true
+}*/
 
 console.log(refinedText.value); //results below
 /*[
@@ -332,61 +353,40 @@ console.log(chopper2.toSentence(string));- //results below
   'It can render results in an average of less than 3 milli seconds.'
 ]*/
 ```
-##### **showNonWords**
 
-**Default**: true.
-
-**Purpose**: this option is meant for the `toWord()` method. It lets result contain non-word characters.
-
-**More**: if true, this option will let the non-words remain in result, if false, it removes all non-words in result, except single quotes that gives words like, don't, doesn't... meaning.
-
-**Value**: it only accepts 2 values, true or false.
-
-**Usage**: 
-
-``` node.js
-//after importing or requiring Kingchop.
-
-const string = `You're a great programmer. You don't have to feel it!!`;
-const chopper = new Kingchop({showNonWords: false});
-console.log(chopper.toWord(string)); //["You're","a","great","programmer","You","don't","have","to","feel","it"]
-
-const chopper2 = new Kingchop({showNonWords: true});
-console.log(chopper2.toWord(string)); //["You're","a","great","programmer",".","You","don't","have","to","feel","it","!","!"]
-```
 ---
-##### **levelUp**
+### **gravity**
 
 **Default**: true, 30.
 
-**Purpose**: this option tries to make a good guess on what's to be a sentence with the length of the input. It is meant for `toSentence()` method.
+**Purpose**: this option tries to make a “close guess” on what's to be a sentence with the length of the input. It is meant for `toSentence()` method.
 
-**More**: if true, this option will use the length of the total string passed in, to find the minimum % length to use to decide what length of sentence is a sentence. And after all breaks into arrays, it checks each of them to find if any is less than or equal to the minimum %, if there are, it joins that array with previous array. 
+**More**: if true, this option will use the length of the total string passed in, to find a minimum scale length to use, to decide what length of sentence is actually a sentence. And after all chops into arrays, it checks each of them to find if any is less than or equal to the minimum scale length, if there are, it joins that array with previous array.
 
-With true as it is by default, it tries to guess if an array is a sentence or not, using Math.log as a balancer for scales.
+With true as it is by default, it tries to “guess” if an array is a sentence or not, using Math.log as a measure for slow scale change.
 
-Math.log helps reduces the rate at which the scale increases, making it easier to get almost same scale on small text and large ones. In other words, instead of using percentage to measure, we do that but with Math.log that slows the rate at which the scale changes.
+Math.log helps reduces the rate at which the scale increases, making it easier to get almost same scale on small text and large ones. In other words, instead of using percentage to measure, we do that but with Math.log that slows the rate at which the scale to text length changes.
 
-For example, scale maybe 20 out of 100 on small text and it says, array values with 30 chars or less should not be a sentence, then that scale can reach 90 out of 100 when faced with large text. Meaning, longer sentences would be treated as "not a sentence".
+For example, scale maybe 20 out of 100 on small text and it says, array values with 30 chars or less should not be a sentence, then that scale can reach 90 out of 100 when faced with large text, meaning, longer sentences would be treated as "not a sentence", which is false.
 
-Math.log slows that scale down. With the above example, the large text scale may reach 25% out of 100. 
+Math.log drops that scale change down. With the above example, the large text scale may reach 25 out of 100. 
 
 With false, this fails.
 
-With numbers which indicates true, you can change the scale to taste. Default is 30, and the allowed values of number, ranges from > 0 to < 100. Outside that, you'll get an error.
+With numbers which indicates true, you can change the text gravity to taste. Default is 30, and the allowed values of number, ranges from > 0 to < 100. Outside that, you'll get an error.
 
 The higher the number, the less sensitive to small sentences. The lower, the more sensitive to small sentences.
 
-**Note**: if status is false, like with returnStatus, or if no match, or breaks or separations into array is done, this will fail, causing it not to be useful. Also, treat the number value, like a volume value.
+**Note**: if status is false, like with returnStatus, or if no match, or chops or separations into array is done, this will fail. `gravity` fails if showDelimeters is false. Also, treat the number value, like a volume value.
 
-**Value**: it only accepts 3 values, true or false or numbers of range > 0 to < 100.
+**Value**: it only accepts 3 types of value, true or false or numbers of range > 0 to < 100.
 
 **Example of Usage**:
 ``` node.js
 //after importing or requiring Kingchop.
 
 const string = `Okay. Okay. I understood what you said. It is just that I can't do it right now. I promise I will attend to it.`;
-const chopper = new Kingchop({levelUp: false});
+const chopper = new Kingchop({gravity: false});
 console.log(chopper.toSentence(string)); // results below
 /*['Okay.',
    'Okay.',
@@ -395,20 +395,20 @@ console.log(chopper.toSentence(string)); // results below
    'I promise I will attend to it.'
   ]
 */
-const chopper2 = new Kingchop({levelUp: true});
+const chopper2 = new Kingchop({gravity: true});
 console.log(chopper2.toSentence(string)); //results below 
 /*['Okay. Okay. I understood what you said.',
   "It is just that I can't do it right now.",
   'I promise I will attend to it.']
 */
-const chopper3 = new Kingchop({levelUp: 10});
+const chopper3 = new Kingchop({gravity: 10});
 console.log(chopper3.toSentence(string)); //results below 
 /*[
   "Okay. Okay. I understood what you said. It is just that I can't do it right now.",
   'I promise I will attend to it.'
   ]
 */
-const chopper4 = new Kingchop({levelUp: 99});
+const chopper4 = new Kingchop({gravity: 99});
 console.log(chopper4.toSentence(string)); //results below 
 /*['Okay.',
    'Okay.',
@@ -423,33 +423,41 @@ console.log(chopper4.toSentence(string)); //results below
 
 **Phew! That was a long one. But I've got a little more. Let's talk on the available methods.**
 
+
 # Methods
 
 **All methods listed, takes in 1 parameter, a string. Anything other than that, expect an error.**
 
+**They're all designed to handle paragraphs, so don't worry.**
+
 #### **`toSentence(string)`**
 
-This method is one that breaks text into arrays, sentence arrays. It uses those parameters for initializing, to offsets rules guiding it. It's a standard method of **kingchop**.
+This method is one that chops strings into arrays, sentence arrays. It uses those parameters for initializing, to offsets rules guiding it. It's a standard method of **kingchop**.
 
 **Example Of Usage**:
 
 ``` node.js
 //after importing or requiring Kingchop, and preparing your string.
-
+const string = `Okay. Okay. I understood what you said.
+                It is just that I can't do it right now. I promise I will attend to it.`
 const chopper = new Kingchop();
-console.log(chopper.toSentence(string)); //returns arrays of sentences.
+console.log(chopper.toSentence(string));
+/*[
+    'Okay. Okay. I understood what you said.',
+    "It is just that I can't do it right now.",
+    'I promise I will attend to it.'
+  ]*/
 ```
 
 **Note**:
 
-The following option do not apply to the `toWord()` method:
-
-- showNonWords
+All the kingchop option applies to the `toSentence()` method
 
 ---
-#### **`toParagraph(string)`** **coming soon*
 
-This method is one that breaks text into detected paragraphs arrays. It uses those parameters for initializing, to offsets rules guiding it. It's a standard method of **kingchop**.
+#### **`toParagraph(string)`**
+
+This method is one that chops text into detected paragraphs arrays. It uses those parameters for initializing, to offsets rules guiding it. It's a standard method of **kingchop**.
 
 **Example Of Usage**:
 
@@ -457,17 +465,27 @@ This method is one that breaks text into detected paragraphs arrays. It uses tho
 //after importing or requiring Kingchop.
 const string = `Do you know that the toWord() method was launched at version 1.0.4 of the Kingchop library?
                 
-                No I didn't.
+                No I didn't. 
                 
-                Okay, go check it out!
+                Go check it out! Saves me a lotta stress.
+                
                 Alright, but have all the coming soon been released?
                 
-                Na! Not yet. But some of them have been released
+                Na! Not so. Some of them have been released, and more have been added.
                 
                 Cool!`
 const chopper = new Kingchop();
-console.log(chopper.toParagraph(string)); //["Do you know that the toWord() method was launched at version 1.0.4 of the Kingchop library?","No I didn't.","Okay, go check it out!","Alright, but have all the coming soon been released?","Na! Not yet. But some of them have been released","Cool!"]
+console.log(chopper.toParagraph(string)); 
+/*[
+  'Do you know that the toWord() method was launched at version 1.0.4 of the Kingchop library?',
+  "No I didn't.",
+  'Go check it out! Saves me a lotta stress.',
+  'Alright, but have all the coming soon been released?',
+  'Na! Not so. Some of them have been released, and more have been added.',
+  'Cool!'
+]*/
 ```
+
 **Note**:
 
 The following options do not apply to the `toParagraph()` method:
@@ -476,12 +494,12 @@ The following options do not apply to the `toParagraph()` method:
 - useExceptions
 - actOnEnclosers
 - showDelimeters
-- showNonWords
 
 ---
+
 #### **`toWord(string)`**
 
-This method is one that breaks text into words, all in arrays. It uses those parameters for initializing, to offsets rules guiding it. It's a standard method of **kingchop**.
+This method is one that chops text into words, all in arrays. It uses those parameters for initializing, to offsets rules guiding it. It's a standard method of **kingchop**.
 
 `toWord()` is able to return words like don't, doesn't, and anything with single quotes, together. This is one of the most unconsidered thing in other libraries.
 
@@ -489,9 +507,28 @@ This method is one that breaks text into words, all in arrays. It uses those par
 
 ```node.js
 //after importing or requiring Kingchop.
-const string = `Do you know that the toWord() method was launched at version 1.0.4 of the Kingchop library? No I didn't.`
+const string = `Don't you love the cake?
+                No, I honestly dislike cakes.
+                But, dude, i stayed all night making this.
+                Hehe, I won't pity, you could eat ’em all if you wish. Because right now, i feel like sticking some explosives in it.`
 const chopper = new Kingchop();
-console.log(chopper.toWord(string)); //["Do","you","know","that","the","toWord","(",")","method","was","launched","at","version","1",".0",".4","of","the","Kingchop","library","?","No","I","didn't","."]
+console.log(chopper.toWord(string));
+/*[
+  "Don't",   'you',        'love',    'the',
+  'cake',    '?',          'No',      ',',
+  'I',       'honestly',   'dislike', 'cakes',
+  '.',       'But',        ',',       'dude',
+  ',',       'i',          'stayed',  'all',
+  'night',   'making',     'this',    '.',
+  'Hehe',    ',',          'I',       "won't",
+  'pity',    ',',          'you',     'could',
+  'eat',     '’',          'em',      'all',
+  'if',      'you',        'wish',    '.',
+  'Because', 'right',      'now',     ',',
+  'i',       'feel',       'like',    'sticking',
+  'some',    'explosives', 'in',      'it',
+  '.'
+]*/
 ```
 **Note**:
 
@@ -502,24 +539,38 @@ The following options do not apply to the `toWord()` method:
 - actOnEnclosers
 - showDelimeters
 - correct
-- levelUp
+- gravity
 
-The rest options work well for it. But the **showNonWords** option which is by default true, causes all non-words to stay in results. If set to false, it removes all non-words only for the `toWord()` method, except single quotes that gives words like, don't, doesn't... meaning.
+The rest options work well for it. But the **showDelimeters** option which is by default true, causes all non-words to stay in results. If set to false, it removes all non-words only for the `toWord()` method, except single quotes that gives words like, don't, doesn’t... meaning.
 
-**Open Question**: should this method handle numbers with periods too? I don't really like seeing this `"1", ".0", ".4"` in the results from the **Example Of Usage**. Should they be together? But they're not words you know? 😅
+Apart from numbers, between words single quotes, like (' or ’), other characters even in sequence, are chopped characters by characters.
 
 ---
 
-#### **`toSubSentence(string)`** **coming soon*
+#### **`toSubSentence(string)`**
 
-This method is one that breaks text into sub sentences arrays. Sub sentences delimeters will be ':,;', some others, and sentences delimeters too will be used. Yes, enclosers are counted as sub sentences. It will use those parameters for initializing, to offsets rules guiding it. It's going to be a standard method of **kingchop**.
+This method chops text into sub sentences arrays. Sub sentences delimeters are ':,;', some others, and sentences delimeters too are used. Yes, enclosers are counted as sub sentences. It will use those parameters for initializing, to offsets rules guiding it. It's going to be a standard method of **kingchop**.
+
+**Example Of Usage**:
+
+```node.js
+//after importing or requiring Kingchop.
+const string = `I have ordered Dr. gamma to pull over right away, He's going to spread the virus (zombie virus), Hurry!`
+const chopper = new Kingchop();
+console.log(chopper.toSubSentence(string)); 
+/*[
+  'I have ordered Dr. gamma to pull over right away,',
+  "He's going to spread the virus",
+  '(zombie virus),',
+  'Hurry!'
+]*/
+```
 
 **Note**:
 
 The following option do not apply to the `toSubSentence()` method:
 
-- showNonWords
-
+- gravity
 
 # Error Codes
 Kingchop returns verbose errors when things didn't go well. You get error codes, reasons for error, correction to errors, and a link to this document for more information.
@@ -530,7 +581,7 @@ Kingchop returns verbose errors when things didn't go well. You get error codes,
 
 ``` node.js
 const Kingchop = require('kingchop');
-let string = `Kingchop demo!`
+let string = `Kingchop demo!`;
 const chopper = new Kingchop({returnStatus: 'wrong value'});
 console.log(chopper.toSentence(string));
 //When you run the code above. You would get this.
@@ -546,45 +597,45 @@ MORE INFO: For more information, check the documentation of Kingchop at: https:/
 
 Now, lets hit some of the error codes.
 
-**E01**: Indicates an option value that isn't appropriate.
+**E01**: Indicates an option value is not appropriate.
 
-**E02**: Indicates parameter of a method was invalid.
+**E02**: Indicates argument(s) of a method was invalid, and numbers of arguments required is exceeded.
 
-**E03**: Indicates error happened within the library causing it to fail.
-
-**E04**: Indicates an unsupported parameter or method instated by maintainers of this library.
+**E03**: Indicates there are unrequired number of arguments for the Kingchop initializer.
 
 # Extras
 
 #### **`correctText(string)` method**
-The `correctText(string)` method, takes in a string as a parameter and tries to correct the string passed in.
+The `correctText(string)` method, takes in a string as a parameter and tries to correct the string passed in, using set rules, but not modifying context or words directly.
 
-It removes unnecessary spaces between words and delimiters, and delimeters and delimeters.
+It removes unnecessary spaces between words and delimeters, and delimeters and delimeters.
 
-**For example**: It can turn this string 'hi ! but ? them   !  !   !', to 'hi! but? them!!!'.
+It is being advancing on every updates.
+
+**For example**: It can turn this string `how would you do that                .par.     .    !     !`, to `how would you do that .par..!!`
 
 **Example of Usage**:
 
 ``` node.js
 const Kingchop = require('kingchop');
-const string = `hi ! but ? them   !    !   !`;
+const string = `how would you do that                .par.     .    !     !`;
 const chopper = new Kingchop();
-console.log(chopper.correctText(string), 'corrected text with the Kingchop library');
+console.log(chopper.correctText(string)); // 'how would you do that .par..!!'
 ```
 
 **More Info**: If you make the `returnStatus` option true, correctText will return output in the `returnStatus` format. The method is meant for the processes of Kingchop, but you can use it if you need to.
 
 # Coming Soon
+
 1. **Compatibility with browsers, meaning, you can use it for frontend development, not just backend alone.**
-2. **Sub Sentence Tokenization.**
-3. **The python version of Kingchop ⚔️.**
+2. **Sub Word Tokenization.**
+3. **Word Ranking.**
+4. **Sentence Ranking.**
 
 # Thanks
 
-**Thanks to the talisman library that I got some data from, to work on this.**
-
-**Thank y'all out there for your support and open-sources.**
+**Thank y'all for your support and majorly, other open-sources out there.**
 
 # Support
 
-[Support this project via Kofi](https://ko-fi.com/victoryosiobe)
+**You could actually support this project via [Kofi](https://ko-fi.com/victoryosiobe)**

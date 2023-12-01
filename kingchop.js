@@ -1,365 +1,560 @@
-try {
-  class Kingchop {
-    constructor(options) {
-      this.showDelimeters = true
-      this.lowcase = false
-      this.addExcepts = null
-      this.useExceptions = null
-      this.actOnEnclosers = false
-      this.correct = true
-      this.showNonWords = true
-      this.levelUp = false
-      this.returnStatus = false
-      if (options) this.options = options
-      if (this.options) {
-        const { addToExceptions, useExceptions, showDelimeters, lowcase, actOnEnclosers, correct, showNonWords, levelUp, returnStatus } = this.options
-        if (addToExceptions) this.addExcepts = addToExceptions
-        if (useExceptions) this.useExceptions = useExceptions
-        if (showDelimeters === false) this.showDelimeters = showDelimeters
-        if (lowcase) this.lowcase = lowcase
-        if (actOnEnclosers) this.actOnEnclosers = actOnEnclosers
-        if (correct === false) this.correct = correct
-        if (showNonWords === false) this.showNonWords = showNonWords
-        if (levelUp) this.levelUp = levelUp
-        if (returnStatus) this.returnStatus = returnStatus
-        this.#checkParams()
-      }
+const { advancedEnclosersExtract, areEnclosersBalanced, reFine, paraCore, attachEnclosers, nextValueFn, escaper } = require('./helper.js')
+class Kingchop {
+  constructor(options) {
+    this.showDelimeters = true
+    this.lowcase = false
+    this.addExcepts = null
+    this.useExceptions = null
+    this.actOnEnclosers = false
+    this.correct = true
+    this.gravity = true
+    this.returnStatus = false
+    if (options) this.options = options
+    if (this.options) {
+      const { addToExceptions, useExceptions, showDelimeters, lowcase, actOnEnclosers, correct, gravity, returnStatus } = this.options
+      if (addToExceptions) this.addExcepts = addToExceptions
+      if (useExceptions) this.useExceptions = useExceptions
+      if (showDelimeters === false) this.showDelimeters = showDelimeters
+      if (lowcase) this.lowcase = lowcase
+      if (actOnEnclosers) this.actOnEnclosers = actOnEnclosers
+      if (correct === false) this.correct = correct
+      if (gravity === false) this.gravity = gravity
+      if (returnStatus) this.returnStatus = returnStatus
+      this.#checkParams(arguments)
     }
-    #checkParams() {
-      if (this.options) {
-        const { addToExceptions, useExceptions, showDelimeters, lowcase, actOnEnclosers, correct, showNonWords, returnStatus } = this.options
-        const addTo1 = ` options of the Kingchop Instance.\nCORRECTION: Required value is null or a string or an array.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`
-        const addTo2 = ` .options of the Kingchop Instance.\nCORRECTION: Required value is true or false.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`
-        const beginWith = `\nKINGCHOP ERROR!\nERROR CODE: E01.\nREASON: Invalid Parameter Value.\nCAUSE: You inputed: `
-        if (addToExceptions && !(Array.isArray(addToExceptions) || addToExceptions === null || addToExceptions === (typeof addToExceptions === 'string'))) throw new Error(`${beginWith}"${addToExceptions}" in the addToExceptions${addTo1}`)
-        if (useExceptions && !(Array.isArray(useExceptions) || useExceptions === null || useExceptions === (typeof useExceptions === 'string'))) throw new Error(`${beginWith}"${useExceptions}" in the useExceptions${addTo1}`)
-        if (showDelimeters && !(showDelimeters === true || showDelimeters === false)) throw new Error(`${beginWith}"${showDelimeters}" in the showDelimeters${addTo2}`)
-        if (lowcase && !(lowcase === true || lowcase === false)) throw new Error(`${beginWith}"${lowcase}" in the lowcase${addTo2}`)
-        if (actOnEnclosers && !(actOnEnclosers === true || actOnEnclosers === false)) throw new Error(`${beginWith}"${actOnEnclosers}" in the actOnEnclosers${addTo2}`)
-        if (correct && !(correct === true || correct === false)) throw new Error(`${beginWith}"${correct}" in the correct${addTo2}`)
-        if (showNonWords && !(showNonWords === true || showNonWords === false)) throw new Error(`${beginWith}"${showNonWords}" in the showNonWords${addTo2}`)
-        if (returnStatus && !(returnStatus === true || returnStatus === false)) throw new Error(`${beginWith}"${returnStatus}" in the returnStatus${addTo2}`)
-      }
-    }
-    correctText(text) {
-      try {
-        let status = true
-        /*    //users can use this method but other methods of kingchop that use this method will never send in an invalid string.
-        if (!(typeof text === 'string')) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E02.\nREASON: The parameter of the method correctText() is invalid.\nCAUSE: You inputed: "${text}" as the parameter of the correctText() method.\nCORRECTION: The correct() method only accepts a value, a string.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-        if (/^\s+$/gm.test(text)) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E02.\nREASON: The parameter of the method correctText() is invalid.\nCAUSE: The parameter of the correctText() method was an empty string.\nCORRECTION: The correctText() method only accepts a value, a string.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-        if (!(typeof devMode === 'boolean')) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E04.\nREASON: The dev parameter of the method correctText() is invalid.\nCAUSE: You inputed: "${devMode}" as the dev parameter of the correctText() method.\nCORRECTION: The dev parameter is for the processes of Kingchop, you may want to avoid using it, though it accepts true or false alone.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-*/
-        /* Experiment
-        const regNoSpaceBeforeEnclosers = /(\w|\W)\(|\)(\w|\W)|(\w|\W)\"|\"(\w|\W)|(\w|\W)\*|\*(\w|\W)|(\w|\W)\{|\}(\w|\W)|(\w|\W)\<|\>(\w|\W)|(\w|\W)\[|\](\w|\W)|(\w|\W)\`|\`(\w|\W)|(\w|\W)\″|\″(\w|\W)|(\w|\W)\„|\„(\w|\W)|(\w|\W)\“|\”(\w|\W)|(\w|\W)\‹|\›(\w|\W)|(\w|\W)\«|»(\w|\W)/gm //' ’ ′ single quotes not included so not to do bad on stuffs like, don't, o’ clock
-        console.log(text.match(regNoSpaceBeforeEnclosers))
-        */
-        const regSpaceBeforeDelimeters = /(?<=\w)\s+(\.|\!|\?)(?=\s)/gm //match first
-        const regSpaceBetweenDelimeters = /(\.\s+(?=\.+)|\!\s+(?=\!+)|\?\s+(?=\?+))/gm //next
-        const regSpaceBeforeWords = /(?<=(\.|\!|\?))\s{2,}(\w|\W)/gm //next
-        text = text.trim()
-        //The following must be in steps, if m1 succeds, m2 should work on what m1 produced
-        const m1 = regSpaceBeforeDelimeters.test(text)
-        if (m1) text.match(regSpaceBeforeDelimeters).map(value => text = text.replace(value, value.trim()))
-        const m2 = regSpaceBetweenDelimeters.test(text)
-        if (m2) text.match(regSpaceBetweenDelimeters).map(value => text = text.replace(value, value.trim()))
-        const m3 = regSpaceBeforeWords.test(text)
-        if (m3) text.match(regSpaceBeforeWords).map(value => text = text.replace(value, ' ' + value.trim()))
-        status = !!m1 || !!m2 || !!m3
-        return this.#returnMan(text, status)
-      } catch (error) {
-        throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E03.\nCAUSE: "${error.name}".\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-      }
-    }
-    #exceptionsList() {
-      let EXCEPTIONS = new Set(['Dr', 'etc', 'Jr', 'M', 'Mgr', 'p', 'Mr', 'Mrs', 'Ms', 'Mme', 'Mlle', 'Prof', 'Sr', 'St', 'pp', 'Pst', 'Dj', 'Po']);
-      if (this.addExcepts) {
-        if (Array.isArray(this.addExcepts)) this.addExcepts.map(e => EXCEPTIONS.add(e))
-        else EXCEPTIONS.add(this.addExcepts)
-      } else if (this.useExceptions) EXCEPTIONS = new Set(this.useExceptions)
-      const EXCEPTIONSARR = []
-      EXCEPTIONS.forEach(e => EXCEPTIONSARR.push(e))
-      return EXCEPTIONSARR
-    }
-    toSentence(text) {
-      try {
-        let status = true
-        text = this.#helpProcessInit(text, 'toSentence')
-        if (this.correct) text = this.#accessPublicInUseMethods(text, 'correctText') //correct text from here
-        const processSentenceTokens = (text) => {
-          const regDelimeters = /\.{2,}|\!{2,}|\?{2,}/g //strict delimiters match
-          const regDelimetersExt = /(\.\s+|\!\s+|\?\s+)/g // match delimiters if space comes after
-          const regIgnoreEnclosers = /\([^\)]+\)|\s+\'.+\'|\".+\"|\*.+\*|\{.+\}|\<.+\>|\[.+\]|\`.+\`|\″.+\″|\s+\′.+\′|\s+\‘.+\’|\„.+\„|\“.+\”|\‹.+\›|\«.+\»/g //' ’ ′ single quotes not included so not to do bad on stuffs like, don't, o’ clock
-          // const regIgnoreEnclosers = /\s\([^\)]+\)|\s\'.+\'|\s\".+\"|\s\*.+\*|\s\{.+\}|\s\<.+\>|\s\[.+\]|\s\`.+\`|\s\″.+\″|\s\′.+\′|\s\‘.+\’|\s\„.+\„|\s\“.+\”|\s\‹.+\›|\s\«.+\»/gm //test01 Experiment
-          const ellipsReg = new RegExp(/\.{3,}\w*|\w*\.{3,}/, 'g')
-          const numbListFormReg = /^\s*\d+\s*\./g //matches digit and period on every line beginning
-          const ellipsIdenti = '§§§××××××§§§'
-          const exceptsIdenti = '§§§§×××××××§§§§'
-          const delIdenti = '§§§§§××××××××§§§§§'
-          const enclosersIdenti = '§§§§§§×××××××××§§§§§§'
-          const numbListFormIdenti = '§§§§§^^^^^§§§§§'
-          const arrayBreakAt = '§§§§§§§××××××××××§§§§§§§'
-          // const deliMatch = text.match(regDelimeters) //match strict
-          const exceptionsArr = this.#exceptionsList()
-          const exceptsCoreBefore = '(\\.\\s*|!\\s*|\\?\\s*)?'
-          const exceptsCoreAfter = '(\\s*\\.|\\s*\\!|\\s*\\?)'
-          let exceptsMatch = false
+  }
+  toSentence(text) {
+    let status = true
+    text = this.#helpProcessInit(text, 'toSentence', arguments)
+    if (this.correct) text = this.#publicMethods(text, 'correctText') //correct text from here
+    const processSentenceTokens = (text) => {
+        const masterState = []
+        const regDelimetersExt = /(\.{2,}\s+|\!{2,}\s+|\?{2,}\s+)|(\.\s+|\!\s+|\?\s+)/g // match delimiters when space comes after
+        const regIgnoreEnclosers = this.#enclosersStyle() // /\s\([^\)]+\)|\s\'.+\'|\s\".+\"|\s\*.+\*|\s\{.+\}|\s\<.+\>|\s\[.+\]|\s\`.+\`|\s\″.+\″|\s\′.+\′|\s\‘.+\’|\s\„.+\„|\s\“.+\”|\s\‹.+\›|\s\«.+\»/gm //test01 Experiment
+        const regDelimetersExtInQuotes = /((\.{2,}\s*|\!{2,}\s*|\?{2,}\s*)|(\.\s*|\!\s*|\?\s*))(”|")$/g
+        const ellipsReg = /((?<=[^\s])\.{3,})(?!$)|(\.{3,}(?=[^\s]))(?!$)/g
+        const numbListFormReg = /^\s*\d+\s*\.\s+/g //matches digits followed by period on every line beginning
+        const exceptionsList = this.#exceptionsList('with_cores')
+        const mainIdenti = '&∆×§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§×∆&'
+        const splitIdenti = '-&∆×§§§§-§§§§§§§§§+§§§§§§§§§§-§§§§§§§×∆&-'
+        let enclosersMatch, mainIdentiTextState, splitIdentiTextState, mainIdentiEscapeValue, splitIdentiEscapeValue
 
-          /*Setion: 1. Here, Everything that's is not needed to be matched is replaced with a string, their identification*/
-          if (numbListFormReg.test(text)) { //test if match on numbListForm: It checks if sentence starts with numbers, followed by a fullstop
-            var numbListFormMatch = text.match(numbListFormReg)
-            numbListFormMatch.map(value => text = text.replace(value, numbListFormIdenti))
-          }
-
-          const exceptsTower = (function() {
-            if (exceptionsArr) {
-              let exceptsBuild = exceptionsArr.reduce((acc, value) => acc + value + '|', '')
-              exceptsBuild = exceptsBuild.slice(0, -1) //to remove last pipe
-              const regExceptsBuild = new RegExp(`(?<!(\\w|\W))(${exceptsCoreBefore}(${exceptsBuild})${exceptsCoreAfter})`, 'gi') // in the string, 'kingchop.', p is part of exceptions, so we lookbehind for any word behind, so breaking and replacing can be done properly. This means sll exceptions most look out for a word behind them. If . or space or nothing is behind, this matches successfully.
-              exceptsMatch = text.match(regExceptsBuild)
+        const section1 = (() => { //escape layer
+          const step1 = (() => {
+            mainIdentiTextState = escaper(text, mainIdenti, 'begin') //Escapes mainIdenti if found in text.
+            if (mainIdentiTextState.status === false) mainIdentiTextState = false
+            else {
+              text = mainIdentiTextState.text
+              mainIdentiEscapeValue = mainIdentiTextState.escaper
             }
           })()
+          const step2 = (() => {
+            splitIdentiTextState = escaper(text, splitIdenti, 'begin') //Escapes mainIdenti if found in text.
+            if (splitIdentiTextState.status === false) splitIdentiTextState = false
+            else {
+              text = splitIdentiTextState.text
+              splitIdentiEscapeValue = splitIdentiTextState.escaper
+            }
+          })()
+        })() //escape layer
 
-          if (exceptsMatch) exceptsMatch.map(value => text = text.replace(value, exceptsIdenti))
-
-
-          if (regIgnoreEnclosers.test(text) && (this.actOnEnclosers === false)) {
-            var enclosersMatch = text.match(regIgnoreEnclosers) //match anything that encloses text
-            enclosersMatch.map(value => text = text.replace(value, enclosersIdenti))
-          }
-          if (ellipsReg.test(text)) {
-            var ellipsMatch = text.match(ellipsReg) //match any ellips
-            ellipsMatch.map(value => text = text.replace(value, ellipsIdenti))
-          }
-          /*Section: 1. End*/
-
-          /*Section: 2. Here, we check what the delimeters option is set to, and use their corresponding matchers. We split into arrays too in this section.*/
-          if (this.showDelimeters === true) {
-            if (regDelimetersExt.test(text)) {
-              const deliExt = text.match(regDelimetersExt) //match the other
-              deliExt.map(value => {
-                //value will contain space, due to regex and word boundaries, so i'll trim it
-                const valueTrimed = value.trim()
-                const update_deli = valueTrimed + delIdenti //
-                text = text.replace(value, update_deli) //update each original match by adding an identifier thats going to be splited in place of the delimiters. Only when showDelimeters is true
+        const section2 = (() => { //encryption layer
+          const step1 = (() => {
+            if (numbListFormReg.test(text)) { //test if match on numbListForm: It checks if sentence starts with numbers, followed by a fullstop
+              let startIndex = 0
+              text = text.replace(numbListFormReg, (match) => {
+                const index = text.indexOf(match, startIndex)
+                startIndex = index + match.length
+                masterState.push([match, index])
+                return mainIdenti
               })
-              text = text.split(delIdenti) //split on the identifier
-              text = this.#spaceOffAndTrim(text) // clean up
-            } else status = false //no match
-          }
-          else if (this.showDelimeters === false) {
-            if (regDelimetersExt.test(text)) {
-              text = text.split(regDelimetersExt) //split on the delimiters
-              if (text.join(arrayBreakAt).match(regDelimeters)) { //check for continous delimiters, so as to remove them
-                text = text.join(arrayBreakAt)
-                const continousDeli = text.match(regDelimeters)
-                continousDeli.map(value => text = text.replace(value, arrayBreakAt))
-                text = text.split(arrayBreakAt)
-              }
-              text = this.#spaceOffAndTrim(text) //clear spaces
-            } else status = false
-          }
-          /*Section: 2. End*/
+            }
+          })()
+          const step2 = (() => {
+            if (exceptionsList.test(text)) { //test if match on numbListForm: It checks if sentence starts with numbers, followed by a fullstop
+              let startIndex = 0
+              text = text.replace(exceptionsList, (match) => {
+                const index = text.indexOf(match, startIndex)
+                startIndex = index + match.length
+                masterState.push([match, index])
+                return mainIdenti
+              })
+            }
+          })()
+          const step3 = (() => {
+            if (regIgnoreEnclosers.test(text) && (this.actOnEnclosers === false)) {
+              let startIndex = 0
+              text = text.replace(regIgnoreEnclosers, (match) => {
+                let outIgo = mainIdenti
+                if (match.endsWith('"') || match.endsWith('”')) {
+                  regDelimetersExtInQuotes.lastIndex = 0 //reset regex state for correct testing
+                  if (regDelimetersExtInQuotes.test(match)) outIgo += splitIdenti //we would split on this identifier in section3 
+                }
+                const index = text.indexOf(match, startIndex)
+                startIndex = index + match.length
+                masterState.push([match, index])
+                return outIgo
+              })
+            }
+          })()
+          const step4 = (() => {
+            if (ellipsReg.test(text)) {
+              let startIndex = 0
+              text = text.replace(ellipsReg, (match) => {
+                const index = text.indexOf(match, startIndex)
+                startIndex = index + match.length
+                masterState.push([match, index])
+                return mainIdenti
+              })
+            }
+          })()
+        })() //encryption layer
 
-          /*Section: 3. We put back everything that was not needed to be matched, according to their identification. Section 2 may fail, leaving status false (no match), so a string will have to be passed in. The functions handling this, can handle both strings and arrays.*/
-          if (numbListFormMatch) text = fixNumbListForm(text) //put back number list
-          if (exceptsMatch) text = fixExceptions(text) //put back exceptions 
-          if (enclosersMatch) text = fixEnclosers(text) //put back enclosers
-          if (ellipsMatch) text = fixEllips(text) //put back ellips content
+        const section3 = (() => { //split layer
+          const step1 = (() => {
+            const m1 = regDelimetersExt.test(text)
+            if (this.showDelimeters === true) {
+              if (m1) text = text.replace(regDelimetersExt, (match) => reFine(match) + splitIdenti)
+              text = text.split(splitIdenti) //split on the identifier
+            } else {
+              if (m1) text = text.replace(regDelimetersExt, splitIdenti)
+              text = text.split(splitIdenti) //split on the identifier
+            }
+            text = reFine(text) // clean up
+            status = m1 || false
+          })()
+        })() //split layer
 
-          function fixNumbListForm(text) { //text could be string or array, depending on whats true above
-            if (Array.isArray(text)) {
-              text = text.join(arrayBreakAt)
-              numbListFormMatch.map(value => text = text.replace(numbListFormIdenti, value))
-              text = text.split(arrayBreakAt)
-            } else numbListFormMatch.map(value => text = text.replace(numbListFormIdenti, value))
-            return text
+        const section4 = (() => { //decyrption layer
+          if (masterState.length !== 0) {
+            masterState.sort((a, b) => a[1] - b[1]) //arrange based on index number (ascending order)
+            for (let i = 0; i < text.length; i++) {
+              const encryptMatch = text[i].match(new RegExp(mainIdenti, 'g'))
+              if (!encryptMatch) continue
+              for (let j = 0; j < encryptMatch.length; j++) text[i] = text[i].replace(mainIdenti, masterState.shift()[0])
+            }
           }
+        })() //decryption layer
 
-          function fixExceptions(text) {
-            if (Array.isArray(text)) {
-              text = text.join(arrayBreakAt)
-              exceptsMatch.map(value => text = text.replace(exceptsIdenti, value))
-              text = text.split(arrayBreakAt)
-            } else exceptsMatch.map(value => text = text.replace(exceptsIdenti, value))
-            return text
-          }
+        const section5 = (() => { //unescaped layer
+          const step1 = (() => mainIdentiTextState ? text = escaper(text, mainIdentiEscapeValue, 'end').text : void(0))()
+          const step2 = (() => splitIdentiTextState ? text = escaper(text, splitIdentiEscapeValue, 'end').text : void(0))()
+        })() //unescape layer
 
-          function fixEnclosers(text) { //text could be string or array, depending on whats true above
-            if (Array.isArray(text)) {
-              text = text.join(arrayBreakAt)
-              enclosersMatch.map(value => text = text.replace(enclosersIdenti, value))
-              text = text.split(arrayBreakAt)
-            } else enclosersMatch.map(value => text = text.replace(enclosersIdenti, value))
-            return text
-          }
-
-          function fixEllips(text) { //text could be string or array, depending on whats true above
-            if (Array.isArray(text)) {
-              text = text.join(arrayBreakAt)
-              ellipsMatch.map(value => text = text.replace(ellipsIdenti, value))
-              text = text.split(arrayBreakAt)
-            } else ellipsMatch.map(value => text = text.replace(ellipsIdenti, value))
-            return text
-          }
-          /*Section: 3. End*/
-          return text
-        }
-        const regPara = /\n/gm
-        if (regPara.test(text)) {
-          text = text.split(regPara)
-          text = this.#spaceOffAndTrim(text)
-          let pileUpArrays = text.map(value => processSentenceTokens(value))
-          text = pileUpArrays.flat()
-        } else text = processSentenceTokens(text)
-        text = Array.isArray(text) ? this.#spaceOffAndTrim(text) : text = this.#andTrim(text) //if string, trim. Well, enclosers may comeback with extra spaces, so we must here. 
-
-        // Didn't trim in this whole function because of levelUp
-        if (this.levelUp) {
-          const res = this.#levelUp(text, this.levelUp)
-          text = res.value
-          status = res.stat
-        }
-        return this.#returnMan(text, status)
-      } catch (error) {
-        throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E03.\nCAUSE: "${error.name}".\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-      }
-    }
-    toParagraph(text) {
-      try {
-        let status = true
-        text = this.#helpProcessInit(text, 'toParagraph')
-        const regPara = /\n/gm
-        if (regPara.test(text)) {
-          text = text.split(regPara)
-          text = this.#spaceOffAndTrim(text)
-          text = text.map(value => this.#accessPublicInUseMethods(value, 'correctText')) //correct text from here
-        } else status = false
-        return this.#returnMan(text, status)
-      }
-      catch (error) {
-        throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E03.\nCAUSE: "${error.name}".\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-      }
-    }
-    toSubSentence(text) {
-      throw new Error(`\nKINGCHOP ERROR\nERROR CODE: E04.\nREASON: Kingchop is causing the error on purpose. This very common.\nCAUSE: You tried to access a "coming soon" method.\nCORRECTION: Do not call this method until it is fully available.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-      //coming soon
-    }
-    toWord(text) {
-      let status = true
-      text = this.#helpProcessInit(text, 'toWord')
-      const processWordTokens = (text) => {
-        const regSpaces = /\s/g
-        const regNoSpaceBetweenWordsAndNonWord = /[^\s\w’‘'′]\w|\w[^\s\w’‘'′]/g // Matches no space between words and anything not word and single quotes, like, ', ′, ‘, ’ to succeed on words like don't, o’ clock
-        const regNoSpaceBetweenNonWord = /[^\s\w][^\s\w]/g // matches non word and non word
-        if (this.showNonWords === false) text = text.replace(/[^\s\w’‘'′]/g, '') //remove all non words
-        const m1 = regNoSpaceBetweenWordsAndNonWord.test(text)
-        const m2 = regNoSpaceBetweenNonWord.test(text)
-        if (m1) text.match(regNoSpaceBetweenWordsAndNonWord).map(value => text = text.replace(value, value[0] + ' ' + value[1]))
-        if (m2) text.match(regNoSpaceBetweenNonWord).map(value => text = text.replace(value, ' ' + value[0] + ' ' + value[1] + ' '))
-        if (regSpaces.test(text)) {
-          text = text.split(regSpaces)
-          text = this.#spaceOffAndTrim(text)
-        }
-        status = !!m1 || !!m2
         return text
       }
-      const regPara = /\n/gm
-      if (regPara.test(text)) {
-        text = text.split(regPara)
-        text = this.#spaceOffAndTrim(text)
-        let pileUpArrays = text.map(value => processWordTokens(value))
-        text = pileUpArrays.flat()
-      } else text = processWordTokens(text)
-
-      return this.#returnMan(text, status)
+      (() => {
+        const para = this.#passParaCore(text)
+        text = para.value
+        const paraStat = para.status
+        if (paraStat) {
+          const pileUpArrays = text.map(v => processSentenceTokens(v))
+          text = pileUpArrays.flat()
+        }
+        else text = processSentenceTokens(text)
+        text = reFine(text)
+      })()
+    /* ⛓️ console.log(text, attachEnclosers(text), 'hallo').  */
+    if (this.gravity && (this.showDelimeters !== false)) {
+      const res = this.#gravityFn(text, this.gravity)
+      text = res.value
+      status = res.stat
     }
-    #levelUp(text, num) {
-      let isNowBackToString = false
-      if (((typeof num !== 'number') && (typeof num !== 'boolean')) && this.levelUp) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E01.\nREASON: Invalid Parameter Value.\nCAUSE: You inputed: ${num} as the levelUp option of the Kingchop Instance.\nCORRECTION: Required value is true, false, or the number for the degree of percentage to work with.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-      if (num > 100 || num < 0 || num === 100 || num === 0) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E01.\nREASON: Invalid Parameter Value.\nCAUSE: You inputed: ${num} as the levelUp option of the Kingchop Instance.\nCORRECTION: Required value is true, false, or the number for the degree of percentage to work with. It must not be 0 or lesser, or 100 or greater in value. It must be between, 1...99.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-      if (typeof text === 'string') return { value: text, stat: isNowBackToString } //operations were not done on the text
-      //  const len = text.length
-      const totalLen = text.reduce((acc, val) => {
-        return acc + val.length
-      }, 0)
-      // const avrTotalLen = totalLen / len
-      runner()
 
-      function runner() {
-        let i = 0
-        while (i < text.length) { //while used because of unstability of text length
-          const currValue = text[i]
-          const nextValue = nextFn(text, i).nextValue
-          const nextIndex = nextFn(text, i).nextIndex
-          if (nextIndex !== undefined) {
-            if (i === 0) {
-              //first value
-              if (thresTest(currValue)) {
-                text[0] = currValue + ' ' + nextValue
-                text.splice(nextIndex, 1)
-                //no incrementing. Since next value has been removed and added to current one
-                //we use them as new value, and the next to new value may pass the test, and so on.
-                //if fail, we increment
-                isNowBackToString = true
-              } else i++
-            }
-            else {
-              isNowBackToString = false
-              if (thresTest(nextValue)) { //test on nextValue
-                text[i] = currValue + ' ' + nextValue //make currValue and nextValue the current value
-                text.splice(nextIndex, 1)
-                //no incrementing. Since next value has been removed and added to current one
-                //we use them as new value, and the next to new value may pass the test, and so on.
-                //if fail, we increment
-              } else i++
-            }
-          } else break
-          //for action with last text array value, the prev value to last one
-          //will add the last to itself. thereby leaving no last readable value (undefined). We will use nextIndex to check
-          //then exit loop. This will handle situations were all values add themselves. leading to 1 string.
-          //we will also signal with isNowBackToString if that happens, to say, no operations were done on toSentence input string text
-          //cos, it turned back to string again
-
-          function nextFn(arr, index) {
-            return arr[index + 1] ? { nextValue: arr[index + 1], nextIndex: index + 1 } : { nextValue: '', nextIndex: void(0) }
+    return this.#returnMan(text, status)
+  }
+  toSubSentence(text) {
+    let status = false
+    const stepsRes = {}
+    text = this.#helpProcessInit(text, 'toSubSentence', arguments)
+    this.gravity = false //turn off if on. We don't need it
+    const sen = this.toSentence(text)
+    if (this.#returnStatusPass()) {
+      text = sen.value
+      if (sen.status === true) status = true //if sentence array was produced, this is also part of this method. Not just the sub-sentence-processor. Hence, it influences decisions
+    } else text = sen
+    const processSubSentenceTokens = (text) => {
+        //# ADD TRAILING DELIMITERS FINDER TOO
+        let textState, escapeValue
+        const nativeDeli = /(\:{2,}|\;{2,}|\,{2,}|\s(\-{2,})|\s(\—{2,})|\s(·{2,}))|(\:|\;|\,|\s\-|\s\—|\s·)/g
+        const enclosersDeli = this.#enclosersStyle()
+        const subIdenti = '§§§§§§§§§§§↑↑↑↑↑←@→↑↑↑↑↑§§§§§§§§§§§'
+        textState = escaper(text, subIdenti, 'begin') //Escapes subIdenti if found in text.
+        if (textState.status === false) textState = false
+        else {
+          text = textState.text
+          escapeValue = textState.escaper
+        }
+        const step1 = (input) => {
+          let textChoice = input || text
+          const m1 = nativeDeli.test(textChoice)
+          if (m1) {
+            if (this.showDelimeters) textChoice = textChoice.replace(nativeDeli, (match) => match + subIdenti)
+            else textChoice = textChoice.replace(nativeDeli, (match) => subIdenti)
           }
+          stepsRes.m1 = m1
+          return textChoice
+        }
 
-          function thresTest(value) {
-            const choice = typeof num !== 'boolean' ? num : 30
-            const scale = Math.log(totalLen + 1); // Balanced scaling factor
-            const ratio = ((scale / value.length) * 100) > choice
-            return ratio
+        const step2 = () => {
+          const m2 = enclosersDeli.test(text)
+          if (m2) {
+            const enclosersMatch = text.match(enclosersDeli)
+            if (this.actOnEnclosers === false) text = text.replace(enclosersDeli, (match) => subIdenti + match + subIdenti)
+            else {
+              const enclosersMatchTwin = enclosersMatch.map(v => step1(v))
+              enclosersMatch.map((v, i) => text = text.replace(v, enclosersMatchTwin[i]))
+            }
+            stepsRes.m2 = m2
           }
         }
+
+        const step3 = () => { //this removes unnecessary subIdenti
+          const pass = stepsRes.m2 //m2 creates the mess, so...
+          if (pass) {
+            const modRegHelp = new RegExp(`${subIdenti}(?=${nativeDeli.toString().slice(1, -2)})`, 'g')
+            if (modRegHelp) text = text.replace(modRegHelp, '')
+          }
+        }
+
+        const step4 = () => {
+          const m4 = stepsRes.m1 || stepsRes.m2
+          const inStep1 = (() => {
+            if (m4) {
+              text = text.split(subIdenti)
+              stepsRes.m4 = m4
+            }
+          })()
+          const inStep2 = (() => textState ? text = escaper(text, escapeValue, 'end').text : void(0))()
+        }
+
+        (() => {
+          text = step1(text)
+          step2()
+          step3()
+          step4()
+        })()
+        return text
+        //we break on :|;|,|""|''|``|()|“”|„„|«»|‘’|‚‚|‹›|′′|″″|{}|[]|||
+        //UPHEADEND
       }
-      return { value: text, stat: isNowBackToString }
-    }
-    #helpProcessInit(text, whoami) { //helps in checking param, correcting text, and lowercasing it
-      if (!(typeof text === 'string')) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E02.\nREASON: The parameter of the method ${whoami}() is invalid.\nCAUSE: You inputed: "${text}" as the parameter of the ${whoami}() method.\nCORRECTION: The ${whoami}() method only accepts a value, a string.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-      if (/^\s*$/.test(text)) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E02.\nREASON: The parameter of the method ${whoami}() is invalid.\nCAUSE: The parameter of the ${whoami}() method was an empty string.\nCORRECTION: The ${whoami}() method only accepts a value, a string.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-      if (this.lowcase) text = text.toLowerCase()
-      return text
-    }
-    #returnMan(text, status) { //helps in returning text
-      return this.returnStatus ? { value: text, status: status } : text
-    }
-    #accessPublicInUseMethods(value, whoami) {
-      //public extra methods help others, but we use them in kingchop processes.The returnStatus if true, conditions all public methods to return an object, {value, status}. This private method helps us check that and returns the actual value. Value from public method is needed for Kingchop processes not object.
-      let result
-      if (whoami === 'correctText' && this.correct) result = this.correctText(value)
-      else result = value
-      if (this.correct && this.returnStatus === true) return result.value //only value from public method is needed
-      else return result
-    }
-    #spaceOffAndTrim(text) { return text.map(e => e = e.trim()).filter(e => e !== '') }
-    #spaceOff(text) { return text.filter(e => e !== '') }
-    #andTrim(text) { return text.trim() }
+      (() => {
+        const para = this.#passParaCore(text)
+        text = para.value
+        const paraStat = para.status
+        if (paraStat) {
+          const pileUpArrays = text.map(v => processSubSentenceTokens(v))
+          text = pileUpArrays.flat()
+        }
+        else text = processSubSentenceTokens(text)
+        text = reFine(text)
+      })()
+
+    status = status || stepsRes.m4
+    /* ⛓️   if (this.actOnEnclosers) { //change to === false
+          console.log(text, 'entry into attachEnc')
+          const textPress = this.#attachEnc(text, status)
+          text = textPress.text
+          status = textPress.status
+        }*/
+    return this.#returnMan(text, status)
   }
-  module.exports = Kingchop
+  toWord(text) { //mark
+    let status = false
+    text = this.#helpProcessInit(text, 'toWord', arguments)
+    const stepsRes = {}
+    const processWordTokens = (text) => {
+        let textState, escapeValue
+        const regSpaces = /\s/g
+        const regNonWords = /[^\sA-Za-z0-9]/g
+        const regOrderQuotes = /(?<=[A-Za-z])['’](?=[A-Za-z])/g //single quotes, like, ', ′, ‘, ’ to succeed on words like don't, o’clock. Kingchop won't consider single quotes after the word is completed, like in relatives’, patents', ol’
+        let quoterIdenti = '<KINGCHOP-QUOTE-IDENTI>'
+        let m1
+        if (this.showDelimeters === false) text = text.replace(/[^\sA-Za-z0-9]/g, '') //remove all non words, except digits
+
+        const step1 = () => {
+          m1 = text.match(regOrderQuotes)
+          if (m1) {
+            textState = escaper(text, quoterIdenti, 'begin')
+            if (textState.status === false) textState = false
+            else {
+              text = textState.text
+              escapeValue = textState.escaper
+            }
+            text = text.replace(regOrderQuotes, quoterIdenti)
+          }
+          stepsRes.m1 = !!m1
+        }
+
+        const step2 = (peekInText) => {
+          const m1 = regNonWords.test(text || peekInText)
+          const spaceOut = (str, regex) => {
+            return str = str.replace(regex, (match) => ' ' + match + ' ')
+          }
+
+          if (m1) {
+            if (!peekInText) {
+              text = spaceOut(text, regNonWords)
+              stepsRes.m1 = m1
+            }
+            else return peekInText = spaceOut(peekInText, regNonWords)
+          }
+          else {
+            if (peekInText) return peekInText
+          }
+        }
+        const step3 = () => {
+          if (m1) {
+            //step2 causes spaces in the quoterIdenti and its own escape value, hence we modify it
+            const inStep1 = (() => m1.map(v => text = text.replace(step2(quoterIdenti), v)))()
+            const inStep2 = (() => textState ? text = escaper(text, step2(escapeValue), 'end').text : void(0))()
+          }
+          const inStep3 = (() => {
+            const m3 = regSpaces.test(text) //done correctly. Since quoterIdenti would have spaces, it's best we put this here
+            if (m3) text = text.split(regSpaces)
+            stepsRes.m3 = m3
+          })()
+        }
+
+        (() => {
+          step1()
+          step2()
+          step3()
+        })()
+        return text
+      }
+      (() => {
+        const para = this.#passParaCore(text)
+        text = para.value
+        const paraStat = para.status
+        if (paraStat) {
+          const pileUpArrays = text.map(v => processWordTokens(v))
+          text = pileUpArrays.flat()
+        }
+        else text = processWordTokens(text)
+        text = reFine(text)
+      })()
+    status = stepsRes.m3
+    return this.#returnMan(text, status)
+  }
+  toParagraph(text) {
+    let status = false
+    text = this.#helpProcessInit(text, 'toParagraph', arguments)
+    const para = this.#passParaCore(text)
+    text = para.value
+    const paraStat = para.status
+    if (paraStat) {
+      text = text.map(value => this.#publicMethods(value, 'correctText')) //correct text from here
+      text = reFine(text)
+      status = true
+    }
+    return this.#returnMan(text, status)
+  }
+  correctText(text) {
+    let status = false
+    //users can use this method but other methods of kingchop that use this method will never send in an invalid string.
+    /* Experiment
+    const regNoSpaceBeforeEnclosers = /(\w|\W)\(|\)(\w|\W)|(\w|\W)\"|\"(\w|\W)|(\w|\W)\*|\*(\w|\W)|(\w|\W)\{|\}(\w|\W)|(\w|\W)\<|\>(\w|\W)|(\w|\W)\[|\](\w|\W)|(\w|\W)\`|\`(\w|\W)|(\w|\W)\″|\″(\w|\W)|(\w|\W)\„|\„(\w|\W)|(\w|\W)\“|\”(\w|\W)|(\w|\W)\‹|\›(\w|\W)|(\w|\W)\«|»(\w|\W)/gm //' ’ ′ single quotes not included so not to do bad on stuffs like, don't, o’ clock
+    console.log(text.match(regNoSpaceBeforeEnclosers))
+    */
+    text = this.#helpProcessInit(text, 'correctText', arguments)
+    text = reFine(text)
+
+    const stepsRes = {}
+
+    function step1() {
+      //handles space before delimeters, provided a word is before the spaces, and a space is after the delimeter
+      const regSpaceBeforeDelimeters = /(?<=\w)\s+(\.|\!|\?)(?=\s{2,})/gm
+      const m1 = regSpaceBeforeDelimeters.test(text)
+      if (m1) text = text.replace(regSpaceBeforeDelimeters, (match) => reFine(match))
+      stepsRes.m1 = m1
+      //1st step
+    }
+
+    function step2() {
+      //handles spaces behind a delimeter that a word follows.
+      const regSpaceBeforeDelimetersWithWord = /(?<=\w)\s{2,}(?=(\.|\!|\?)\s*\w)/gm
+      const m2 = regSpaceBeforeDelimetersWithWord.test(text)
+      if (m2) text = text.replace(regSpaceBeforeDelimetersWithWord, (match) => ' ')
+      stepsRes.m2 = m2
+      //2nd step
+    }
+
+    function step3() {
+      //handles delimeters close to each other
+      const regSpaceBetweenDelimeters = /(\.\s+(?=\.+))|(\!\s+(?=\!+))|(\?\s+(?=\?+))/gm
+      const m3 = regSpaceBetweenDelimeters.test(text)
+      if (m3) text = text.replace(regSpaceBetweenDelimeters, (match) => reFine(match))
+      stepsRes.m3 = m3
+      //3rd step
+    }
+
+    function step4() {
+      //handles alot of spaces, before a word, provided, a delimeter is before the spaces started
+      const regSpaceBeforeWords = /(?<=(\.|\!|\?))\s{2,}(\w|\W)/gm
+      const m4 = regSpaceBeforeWords.test(text)
+      if (m4) text.match(regSpaceBeforeWords).map(value => text = text.replace(value, ' ' + reFine(value)))
+      stepsRes.m4 = m4
+      //4th step
+    }
+
+    function step5() {
+      //handle trailing delimiters, even when the are not same, and are spaced out
+      const regTrailingDelimeters = /(\s*((\.(\s|\.|\!|\?)+)|(\!(\s|\.|\!|\?)+)|(\?(\s|\.|\!|\?)+)))$/g
+      const m5 = regTrailingDelimeters.test(text)
+      if (m5) text = text.replace(regTrailingDelimeters, (match) => match.replace(/\s+/g, ''))
+      stepsRes.m5 = m5
+      //5th step
+    }
+
+    (function executeSteps() {
+      step1()
+      step2()
+      step3()
+      step4()
+      step5()
+    })()
+
+    status = stepsRes.m1 || stepsRes.m2 || stepsRes.m3 || stepsRes.m4 || stepsRes.m5
+    return this.#returnMan(text, status)
+  }
+  #checkParams(args) {
+    if (args.length > 1) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E03.\nREASON: The arguments of the kingchop initializer is invalid.\nCAUSE: The arguments of the Kingchop initializer was more than 1.\nCORRECTION: The Kingchop initializer only accepts a value, an object of options, not multiple arguments.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
+    if (this.options) {
+      const { addToExceptions, useExceptions, showDelimeters, lowcase, actOnEnclosers, correct, returnStatus } = this.options
+      const addTo1 = ` options of the Kingchop Instance.\nCORRECTION: Required value is null or a string or an array.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`
+      const addTo2 = ` .options of the Kingchop Instance.\nCORRECTION: Required value is true or false.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`
+      const beginWith = `\nKINGCHOP ERROR!\nERROR CODE: E01.\nREASON: Invalid Parameter Value.\nCAUSE: You inputed: `
+      if (addToExceptions && !(Array.isArray(addToExceptions) || addToExceptions === null || addToExceptions === (typeof addToExceptions === 'string'))) throw new Error(`${beginWith}"${addToExceptions}" in the addToExceptions${addTo1}`)
+      if (useExceptions && !(Array.isArray(useExceptions) || useExceptions === null || useExceptions === (typeof useExceptions === 'string'))) throw new Error(`${beginWith}"${useExceptions}" in the useExceptions${addTo1}`)
+      if (showDelimeters && !(showDelimeters === true || showDelimeters === false)) throw new Error(`${beginWith}"${showDelimeters}" in the showDelimeters${addTo2}`)
+      if (lowcase && !(lowcase === true || lowcase === false)) throw new Error(`${beginWith}"${lowcase}" in the lowcase${addTo2}`)
+      if (actOnEnclosers && !(actOnEnclosers === true || actOnEnclosers === false)) throw new Error(`${beginWith}"${actOnEnclosers}" in the actOnEnclosers${addTo2}`)
+      if (correct && !(correct === true || correct === false)) throw new Error(`${beginWith}"${correct}" in the correct${addTo2}`)
+      if (returnStatus && !(returnStatus === true || returnStatus === false)) throw new Error(`${beginWith}"${returnStatus}" in the returnStatus${addTo2}`)
+    }
+  }
+  #exceptionsList(isCores) {
+    let EXCEPTIONS = new Set(['Dr', 'etc', 'Jr', 'M', 'Mgr', 'p', 'Mr', 'Mrs', 'Ms', 'Mme', 'Mlle', 'Prof', 'Sr', 'St', 'pp', 'Pst', 'Dj', 'Po']);
+    if (this.addExcepts) {
+      if (Array.isArray(this.addExcepts)) this.addExcepts.map(e => EXCEPTIONS.add(e))
+      else EXCEPTIONS.add(this.addExcepts)
+    } else if (this.useExceptions) EXCEPTIONS = new Set(this.useExceptions)
+    let EXCEPTIONSARR = []
+    EXCEPTIONS.forEach(e => EXCEPTIONSARR.push(e))
+    if (isCores) {
+      const exceptsCoreBefore = '(\\.\\s*|!\\s*|\\?\\s*)?'
+      const exceptsCoreAfter = '(\\s*\\.|\\s*\\!|\\s*\\?)'
+      const exceptsBuilder = (() => {
+        let exceptsBuild = EXCEPTIONSARR.reduce((acc, value) => acc + value + '|', '').slice(0, -1)
+        EXCEPTIONSARR = new RegExp(`(?<!([^\\s]))(${exceptsCoreBefore}(${exceptsBuild})${exceptsCoreAfter})`, 'gi') // in the string, 'kingchop.', p is part of exceptions, so we lookbehind for any word behind, so breaking and replacing can be done properly. This means all exceptions most look out for a word behind them. If . or space or nothing is behind, this matches successfully.
+      })()
+    }
+    return EXCEPTIONSARR
+  }
+  #gravityFn(text, num) {
+    let isNowBackToString = false
+    if (((typeof num !== 'number') && (typeof num !== 'boolean')) && this.gravity) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E01.\nREASON: Invalid Parameter Value.\nCAUSE: You inputed: ${num} as the gravity option of the Kingchop Instance.\nCORRECTION: Required value is true, false, or the number for the degree of percentage to work with.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
+    if (num > 100 || num < 0 || num === 100 || num === 0) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E01.\nREASON: Invalid Parameter Value.\nCAUSE: You inputed: ${num} as the gravity option of the Kingchop Instance.\nCORRECTION: Required value is true, false, or the number for the degree of percentage to work with. It must not be 0 or lesser, or 100 or greater in value. It must be between, 1...99.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
+    if (typeof text === 'string') return { value: text, stat: isNowBackToString } //operations were not done on the text
+    //  const len = text.length
+    const totalLen = text.reduce((acc, val) => {
+      return acc + val.length
+    }, 0)
+    // const avrTotalLen = totalLen / len
+    runner()
+
+    function runner() {
+      let i = 0
+      while (i < text.length) { //while used because of unstability of text length
+        const currValue = text[i]
+        const next = nextValueFn(text, i)
+        const nextValue = next.value
+        const nextIndex = next.index
+        if (nextIndex !== undefined) {
+          if (i === 0) {
+            //first value
+            if (thresTest(currValue)) {
+              text[0] = currValue + ' ' + nextValue
+              text.splice(nextIndex, 1)
+              //no incrementing. Since next value has been removed and added to current one
+              //we use them as new value, and the next to new value may pass the test, and so on.
+              //if fail, we increment and move to next loop
+              isNowBackToString = true
+            } else i++
+          }
+          else {
+            isNowBackToString = false
+            if (thresTest(nextValue)) { //test on nextValue
+              text[i] = currValue + ' ' + nextValue //make currValue and nextValue the current value
+              text.splice(nextIndex, 1)
+              //no incrementing. Since next value has been removed and added to current one
+              //we use them as new value, and the next to new value may pass the test, and so on.
+              //if fail, we increment and move to nect loop
+            } else i++
+          }
+        } else break
+        //for action with last text array value, the prev value to last one
+        //will add the last to itself. thereby leaving no last readable value (undefined). We will use nextIndex to check
+        //then exit loop. This will handle situations were all values add themselves. leading to 1 string.
+        //we will also signal with isNowBackToString if that happens, to say, no operations were done on toSentence input string text
+        //cos, it turned back to string again
+
+        function thresTest(value) {
+          const choice = typeof num !== 'boolean' ? num : 30
+          const scale = Math.log(totalLen + 1); // Balanced scaling factor
+          const ratio = ((scale / value.length) * 100) > choice
+          return ratio
+        }
+      }
+    }
+    return { value: text, stat: isNowBackToString ? false : true } // false here means not a string, which means success.
+  }
+  #helpProcessInit(text, whoami, args) { //helps in checking param, correcting text, and lowercasing it
+    if (!(typeof text === 'string')) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E02.\nREASON: The parameter of the method ${whoami}() is invalid.\nCAUSE: You inputed: "${text}" as the parameter of the ${whoami}() method.\nCORRECTION: The ${whoami}() method only accepts a value, a string.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
+    if (/^\s*$/.test(text)) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E02.\nREASON: The parameter of the method ${whoami}() is invalid.\nCAUSE: The parameter of the ${whoami}() method was an empty string.\nCORRECTION: The ${whoami}() method only accepts a value, a string.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
+    if (args.length > 1) throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E02.\nREASON: The arguments of the method ${whoami}() is invalid.\nCAUSE: The arguments of the ${whoami}() method was more than 1.\nCORRECTION: The ${whoami}() method only accepts a value, a string, not multiple arguments.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
+    if (this.lowcase) text = text.toLowerCase()
+    return text
+  }
+  #returnMan(text, status) { //helps in returning text, changing status and text formats.
+    if ([undefined, null].includes(status)) status = false
+    if (Array.isArray(text) && !(text.length > 1)) {
+      text = text.toString()
+      status = false
+      //find if text is one value in array, then change text to string and status to false
+    }
+    return this.returnStatus ? { value: text, status: status } : text
+  }
+  #returnStatusPass() {
+    if (this.returnStatus) return true
+    else return false
+  }
+  #passParaCore(text) {
+    text = paraCore(text)
+    if (Array.isArray(text)) return { value: text, status: true }
+    else return { value: text, status: false }
+  }
+  #publicMethods(value, whoami) {
+    //public extra methods help others, but we use them in kingchop processes.The returnStatus if true, conditions all public methods to return an object, {value, status}. This private method helps us check that and returns the actual value. Value from public method is needed for Kingchop processes not object.
+    let result
+    if (whoami === 'correctText' && this.correct) result = this.correctText(value)
+    else result = value
+    if (this.correct && this.returnStatus === true) return result.value //only value from public method is needed
+    else return result
+  }
+  #enclosersStyle() {
+    return /\(.+?\)|((^(\'.+?\'))|((?<=\s)\'.+?\'))|\".+?\"|\*.+?\*|\{.+?\}|\<.+?\>|\[.+?\]|((^(\‘.+?\’))|((?<=\s)\‘.+?\’))|\„.+?\„|\“.+?\”|\‹.+?\›|\«.+?\»/g /*' ’ ′ single quotes are specialized so not to do bad on stuffs like, don't, o’ clock*/
+    // /\s\([^\)]+\)|\s\'.+\'|\s\".+\"|\s\*.+\*|\s\{.+\}|\s\<.+\>|\s\[.+\]|\s\`.+\`|\s\″.+\″|\s\′.+\′|\s\‘.+\’|\s\„.+\„|\s\“.+\”|\s\‹.+\›|\s\«.+\»/gm //test01 Experiment
+  }
+  #attachEnc(text, status) {
+    if (status === false) return { text: text, status: status } //text here if stat is false means text is still string snd unprocessed.
+    text = attachEnclosers(text)
+    if (text.length > 1) return { text: text, status: status }
+    else return { text: text, status: false } //means array text was pressed back to 1 array value. So status should be false.
+  }
 }
-catch (error) {
-  throw new Error(`\nKINGCHOP ERROR!\nERROR CODE: E03.\nCAUSE: "${error.name}".\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`)
-}
+module.exports = Kingchop
 /*
     ✅✅ lowcase: default false 
     ✅✅ addToExceptions: default null: adds more exceptions to the exceptions array after filtering possible duplicates
@@ -367,11 +562,13 @@ catch (error) {
     ✅✅ actOnEnclosers: default false: to make match and possibly break in enclosers like (), ''...
     ✅✅ showDelimeters: default true: leaves the delimeters in belonging arrays instead of removing them
     ✅✅ correct: default true: tries to correct the text
-    ✅✅ showNonWords: default true: this is only used by toWord method. it removes all non words if false, except, single quotes that give meaning to words like, don't, your's.
     ✅✅ returnStatus: default false: returns an output in object form. {value: 'Whatever was processed', status: true or false (if anything was done or not)
+    ✅✅ gravity: default true: uses an algorithm to detect what should be a sentence or not.
     options = {addExceptions: ['co', 'inc', 'ltd', 'org'],  useExceptions: ['org', 'inc', 'ltd'], showDelimeters: false, lowcase: true}
 */
+
 /*
-toSentence is not tokenizing properly. Eg: text = '1. Play. 2. Don't write 3. Jump around.'
-add That toWord can handle words like, don't, o’ clock
+Next Fixes:
+toSentence: is not tokenizing properly. Eg: text = '1. Play. 2. Don't write 3. Jump around.'
+toWord: find way, so toWord will not leave something like "don't'you" unbroken.
 */
