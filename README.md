@@ -1,3 +1,5 @@
+[![Latest Version](http://img.shields.io/npm/v/kingchop.svg?style=flat-square)](https://www.npmjs.org/package/kingchop)
+
 ### Quick Links
 
 - [Kingchop ⚔️](#kingchop)
