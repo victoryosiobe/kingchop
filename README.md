@@ -1,5 +1,7 @@
-[![Latest Version](http://img.shields.io/npm/v/kingchop.svg?style=flat-square)](https://www.npmjs.org/package/kingchop)
+[![Latest NPM Version](https://badgen.net/npm/v/kingchop)](https://www.npmjs.org/package/kingchop)
 [![NPM Downloads](https://img.shields.io/npm/dt/kingchop.svg?style=flat)](#)
+[![NPM Dependents](https://badgen.net/npm/dependents/kingchop)](#)
+
 [![Watchers On GitHub](https://badgen.net/github/watchers/victoryosiobe/kingchop)](#)
 [![Contributors On GitHub](https://badgen.net/github/contributors/victoryosiobe/kingchop)](#)
 [![License](https://badgen.net/github/license/victoryosiobe/kingchop)](#)
