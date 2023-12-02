@@ -10,8 +10,9 @@
 [![Open Issues](https://badgen.net/github/open-issues/victoryosiobe/kingchop)](#)
 [![Closed Issues](https://badgen.net//github/closed-issues/victoryosiobe/kingchop)](#)
 
-[![Support Via Kofi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/victoryosiobe)
+[![Language](https://img.shields.io/badge/JavaScript-yellow?style=for-the-badge&logo=JavaScript&logoColor=white)](#)
 [![Love Badge](http://ForTheBadge.com/images/badges/built-with-love.svg)](#)
+[![Support Via Kofi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/victoryosiobe)
 
 ### Quick Links
 
