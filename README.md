@@ -1,4 +1,5 @@
 [![Latest Version](http://img.shields.io/npm/v/kingchop.svg?style=flat-square)](https://www.npmjs.org/package/kingchop)
+[![NPM Downloads](https://img.shields.io/npm/dt/kingchop.svg?style=flat)]()
 
 ### Quick Links
 
