@@ -1,5 +1,15 @@
 [![Latest Version](http://img.shields.io/npm/v/kingchop.svg?style=flat-square)](https://www.npmjs.org/package/kingchop)
-[![NPM Downloads](https://img.shields.io/npm/dt/kingchop.svg?style=flat)]()
+[![NPM Downloads](https://img.shields.io/npm/dt/kingchop.svg?style=flat)](#)
+[![Watchers On GitHub](https://badgen.net/github/watchers/victoryosiobe/kingchop)](#)
+[![Contributors On GitHub](https://badgen.net/github/contributors/victoryosiobe/kingchop)](#)
+[![License](https://badgen.net/github/license/victoryosiobe/kingchop)](#)
+[![Stars On GitHub](https://badgen.net/github/stars/victoryosiobe/kingchop)](#)
+[![Issues On GitHub](https://badgen.net/github/issues/victoryosiobe/kingchop)](#)
+[![Open Issues](https://badgen.net/github/open-issues/victoryosiobe/kingchop)](#)
+[![Closed Issues](https://badgen.net//github/closed-issues/victoryosiobe/kingchop)](#)
+
+[![Support Via Kofi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/victoryosiobe)
+[![Love Badge](http://ForTheBadge.com/images/badges/built-with-love.svg)](#)
 
 ### Quick Links
 
@@ -641,4 +651,4 @@ console.log(chopper.correctText(string)); // 'how would you do that .par..!!'
 
 # Support
 
-**You could actually support this project via [Kofi](https://ko-fi.com/victoryosiobe)**
+**You could actually support this project via [![Kofi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/victoryosiobe)**
