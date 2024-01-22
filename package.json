@@ -1,0 +1,40 @@
+{
+  "name": "kingchop",
+  "version": "1.0.6",
+  "description": "A text tokenizing library that handles strings, by tokenizing them into arrays, depending on intended format, like sentences, sub sentences, paragraphs, words...",
+  "main": "io_backend.js",
+  "scripts": {
+    "comment": " \"test\": \"mocha\" tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/victoryosiobe/kingchop.git"
+  },
+  "keywords": [
+    "NLP tokenizer",
+    "Tokenizer",
+    "Sentence tokenizer",
+    "text tokenizer",
+    "node.js tokenizer",
+    "flexible text tokenizer",
+    "general text tokenizer",
+    "paragraph tokenizer",
+    "sub sentence tokenizer",
+    "stable tokenizer",
+    "easy text tokenizer",
+    "new text tokenizer"
+  ],
+  "comment": {
+    "type": "module",
+    "module": "./kingchop.js",
+    "jsdelivr": "./browser/kingchop.js",
+    "unpkg": "./browser/kingchop.js"
+  },
+  "author": "Victory Osiobe",
+  "email": "myvicosy@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/victoryosiobe/kingchop/issues"
+  },
+  "homepage": "https://github.com/victoryosiobe/kingchop#readme"
+}
