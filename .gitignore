@@ -1,4 +1,6 @@
 tests.md
 todo.md
+*.lock
+*.log
+node_modules
 io_backend.js
-*.json
