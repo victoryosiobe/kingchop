@@ -1,12 +1,14 @@
 **Init Log at v 1.0.5.......**
 
 # v1.0.5
- - Fixed `correctText` method not working through `toSentence` method, even when enabled.
- - Added the `levelUp` option.
- - Updated wrongly written README.md.
- - Fixed other bugs.
+
+- Fixed `correctText` method not working through `toSentence` method, even when enabled.
+- Added the `levelUp` option.
+- Updated wrongly written README.md.
+- Fixed other bugs.
 
 # v1.0.6 (Aurora)
+
 - Fixed `levelUp` option not working by default.
 - changed `levelUp` method to `gravity` for easy learning.
 - Fixed `returnStatus` status property, that was negated by the `levelUp` option, and let's just say overally.
@@ -17,4 +19,9 @@
 - Updated the README.md to showcase up-to-date changes.
 - Depreciated all version below `v1.0.6`, because of vast changes, and poor performance of previous versions.
 
-**Infact, a lot was done, in the latest version, causing delays. There's still more to come.**
+# v1.1.0 (Aurora)
+
+- Added the advannced enclosers extractor function.
+- Updated `README.md`.
+- Set folder for modularization, for eazy development, for me. :)
+
