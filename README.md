@@ -252,7 +252,7 @@ console.log(chopper2.toSentence(string)); //results below
 
 **Note**: it's difficult to detect enclosers like `"", ''`, which starts and ends with same character. `“”` is detected properly, but `‘’` which is multipurpose is an extra layer of difficulty, because it can be used as quotes, used to indicate shorten words, like: `don’t, ol’, rock ’n’ roll`. This creates a lot of imbalances.
 
-As of the **Aurora, v1.1.7** update, the extraction function built at **v1.0.6**, for enclosers of diffrent opening and closing characters (safe-enclosers), like **(), [], {}**, has been utilized.
+As of the **Aurora, v1.1.0** update, the extraction function built at **v1.0.6**, for enclosers of diffrent opening and closing characters (safe-enclosers), like **(), [], {}**, has been utilized.
 
 Due to this update, Kingchop can handle nests of safe-enclosers detected. However, this multipurpose quotes and same char enclosers, **‘’, '', ""**, remain a problem.
 
