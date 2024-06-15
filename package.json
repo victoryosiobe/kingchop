@@ -1,6 +1,6 @@
 {
   "name": "kingchop",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A text tokenizing library that handles strings, by tokenizing them into arrays, depending on intended format, like sentences, sub sentences, paragraphs, words...",
   "main": "io_backend.js",
   "scripts": {
