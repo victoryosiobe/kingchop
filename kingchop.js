@@ -8,15 +8,15 @@ const {
   hNextValueFn,
   hEscaper,
 } = require("./helper.js");
-const xam = "mod";
-const sen = require(`./${xam}/sen.js`);
-const ssen = require(`./${xam}/ssen.js`);
-const word = require(`./${xam}/word.js`);
-const para = require(`./${xam}/para.js`);
-const correct = require(`./${xam}/correct.js`);
-const check = require(`./${xam}/check.js`);
-const except = require(`./${xam}/except.js`);
-const grav = require(`./${xam}/grav.js`);
+const p = "mod";
+const sen = require(`./${p}/sen.js`);
+const ssen = require(`./${p}/ssen.js`);
+const word = require(`./${p}/word.js`);
+const para = require(`./${p}/para.js`);
+const correct = require(`./${p}/correct.js`);
+const check = require(`./${p}/check.js`);
+const except = require(`./${p}/except.js`);
+const grav = require(`./${p}/grav.js`);
 class Kingchop {
   constructor(options) {
     this.showDelimeters = true;
@@ -27,7 +27,6 @@ class Kingchop {
     this.correct = true;
     this.gravity = true;
     this.returnStatus = false;
-    this.extractEnclosers = true;
     if (options) this.options = options;
     if (this.options) {
       const {
@@ -520,10 +519,15 @@ class Kingchop {
     return this.#returnMan(text, status);
   }
   #checkParams(args) {
-    if (args.length > 1)
-      throw new Error(
-        `\nKINGCHOP ERROR!\nERROR CODE: E03.\nREASON: The arguments of the kingchop initializer is invalid.\nCAUSE: The arguments of the Kingchop initializer was more than 1.\nCORRECTION: The Kingchop initializer only accepts a value, an object of options, not multiple arguments.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`,
+    if (args.length > 1) {
+      const ec = "E03";
+      this.#errGen(
+        ec,
+        `The top-level arguments of the kingchop initializer is invalid`,
+        `The arguments of the Kingchop initializer was more than 1`,
+        `The Kingchop initializer only accepts a value, an object of options, not multiple arguments`,
       );
+    }
     if (this.options) {
       const {
         addToExceptions,
@@ -532,55 +536,127 @@ class Kingchop {
         lowcase,
         actOnEnclosers,
         correct,
+        gravity,
         returnStatus,
       } = this.options;
-      const addTo1 = ` options of the Kingchop Instance.\nCORRECTION: Required value is null or a string or an array.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`;
-      const addTo2 = ` .options of the Kingchop Instance.\nCORRECTION: Required value is true or false.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`;
-      const beginWith = `\nKINGCHOP ERROR!\nERROR CODE: E01.\nREASON: Invalid Parameter Value.\nCAUSE: You inputed: `;
+
+      const ec = "E01";
+      const r = `Invalid Parameter Value`;
+      const ca = `You inputed:`;
+      const ca2 = `option of the Kingchop instance`;
+      const c = `Required value is null or a string with values or an array with values`;
+      const c2 = `Required value is true or false`;
       if (
-        addToExceptions &&
+        addToExceptions !== undefined &&
         !(
           Array.isArray(addToExceptions) ||
           addToExceptions === null ||
           addToExceptions === (typeof addToExceptions === "string")
         )
-      )
-        throw new Error(
-          `${beginWith}"${addToExceptions}" in the addToExceptions${addTo1}`,
+      ) {
+        const idT = "in the addToExceptions";
+        this.#errGen(
+          ec,
+          r,
+          `${ca} "${addToExceptions}" (${typeof addToExceptions}), ${idT} ${ca2}`,
+          c,
         );
+      }
       if (
-        useExceptions &&
+        useExceptions !== undefined &&
         !(
           Array.isArray(useExceptions) ||
           useExceptions === null ||
           useExceptions === (typeof useExceptions === "string")
         )
-      )
-        throw new Error(
-          `${beginWith}"${useExceptions}" in the useExceptions${addTo1}`,
+      ) {
+        const idT = "in the useExceptions";
+        this.#errGen(
+          ec,
+          r,
+          `${ca} "${useExceptions}" (${typeof useExceptions}), ${idT} ${ca2}`,
+          c,
         );
+      }
       if (
-        showDelimeters &&
+        showDelimeters !== undefined &&
         !(showDelimeters === true || showDelimeters === false)
-      )
-        throw new Error(
-          `${beginWith}"${showDelimeters}" in the showDelimeters${addTo2}`,
+      ) {
+        const idT = "in the showDelimeters";
+        this.#errGen(
+          ec,
+          r,
+          `${ca} "${showDelimeters}" (${typeof showDelimeters}), ${idT} ${ca2}`,
+          c2,
         );
-      if (lowcase && !(lowcase === true || lowcase === false))
-        throw new Error(`${beginWith}"${lowcase}" in the lowcase${addTo2}`);
+      }
+      if (lowcase !== undefined && !(lowcase === true || lowcase === false)) {
+        const idT = "in the lowcase";
+        this.#errGen(
+          ec,
+          r,
+          `${ca} "${lowcase}" (${typeof lowcase}), ${idT} ${ca2}`,
+          c2,
+        );
+      }
       if (
-        actOnEnclosers &&
+        actOnEnclosers !== undefined &&
         !(actOnEnclosers === true || actOnEnclosers === false)
-      )
-        throw new Error(
-          `${beginWith}"${actOnEnclosers}" in the actOnEnclosers${addTo2}`,
+      ) {
+        const idT = "in the actOnEnclosers";
+        this.#errGen(
+          ec,
+          r,
+          `${ca} "${actOnEnclosers}" (${typeof actOnEnclosers}), ${idT} ${ca2}`,
+          c2,
         );
-      if (correct && !(correct === true || correct === false))
-        throw new Error(`${beginWith}"${correct}" in the correct${addTo2}`);
-      if (returnStatus && !(returnStatus === true || returnStatus === false))
-        throw new Error(
-          `${beginWith}"${returnStatus}" in the returnStatus${addTo2}`,
+      }
+      if (correct !== undefined && !(correct === true || correct === false)) {
+        const idT = "in the correct";
+        this.#errGen(
+          ec,
+          r,
+          `${ca} "${correct}" (${typeof correct}), ${idT} ${ca2}`,
+          c2,
         );
+      }
+
+      if (
+        gravity !== undefined &&
+        typeof gravity !== "number" &&
+        typeof gravity !== "boolean"
+      ) {
+        const idT = "in the gravity";
+        this.#errGen(
+          ec,
+          r,
+          `${ca} "${gravity}" (${typeof gravity}), ${idT} ${ca2}`,
+          c2,
+        );
+      }
+      if (
+        returnStatus !== undefined &&
+        !(returnStatus === true || returnStatus === false)
+      ) {
+        const idT = "in the returnStatus";
+        this.#errGen(
+          ec,
+          r,
+          `${ca} "${returnStatus}" (${typeof returnStatus}), ${idT} ${ca2}`,
+          c2,
+        );
+      }
+      //CUSTOM
+
+      if (gravity > 100 || gravity < 0 || gravity === 100 || gravity === 0) {
+        const idT = "in the gravity";
+        this.#errGen(
+          ec,
+          r,
+          `You inputed: ${gravity} (${typeof gravity}), ${idT} ${ca2}`,
+          `${c2} OR the number of percentage to work with. It must not be 0 or lesser, or 100 or greater in value. It must be between, 1...99`,
+        );
+      }
     }
   }
   #exceptionsList(isCores) {
@@ -622,21 +698,13 @@ class Kingchop {
         EXCEPTIONSARR = new RegExp(
           `(?<!([^\\s]))(${exceptsCoreBefore}(${exceptsBuild})${exceptsCoreAfter})`,
           "gi",
-        ); // in the string, 'kingchop.', p is part of exceptions, so we lookbehind for any word behind, so breaking and replacing can be done properly. This means all exceptions most look out for a word behind them. If . or space or nothing is behind, this matches successfully.
+        ); //in the string, 'kingchop.', p is part of exceptions, so we lookbehind for any word behind, so breaking and replacing can be done properly. This means all exceptions most look out for a word behind them. If . or space or nothing is behind, this matches successfully.
       })();
     }
     return EXCEPTIONSARR;
   }
   #gravityFn(text, num) {
     let isNowBackToString = false;
-    if (typeof num !== "number" && typeof num !== "boolean" && this.gravity)
-      throw new Error(
-        `\nKINGCHOP ERROR!\nERROR CODE: E01.\nREASON: Invalid Parameter Value.\nCAUSE: You inputed: ${num} as the gravity option of the Kingchop Instance.\nCORRECTION: Required value is true, false, or the number for the degree of percentage to work with.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`,
-      );
-    if (num > 100 || num < 0 || num === 100 || num === 0)
-      throw new Error(
-        `\nKINGCHOP ERROR!\nERROR CODE: E01.\nREASON: Invalid Parameter Value.\nCAUSE: You inputed: ${num} as the gravity option of the Kingchop Instance.\nCORRECTION: Required value is true, false, or the number for the degree of percentage to work with. It must not be 0 or lesser, or 100 or greater in value. It must be between, 1...99.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`,
-      );
     if (typeof text === "string")
       return { value: text, stat: isNowBackToString }; //operations were not done on the text
     //  const len = text.length
@@ -695,20 +763,37 @@ class Kingchop {
   }
   #helpProcessInit(text, whoami, args) {
     //helps in checking param, correcting text, and lowercasing it
+    const ec = "E02";
+    const r = `The parameter of the method ${whoami}() is invalid`;
+    const c = `The ${whoami}() method only accepts a value, a string`;
     if (!(typeof text === "string"))
-      throw new Error(
-        `\nKINGCHOP ERROR!\nERROR CODE: E02.\nREASON: The parameter of the method ${whoami}() is invalid.\nCAUSE: You inputed: "${text}" as the parameter of the ${whoami}() method.\nCORRECTION: The ${whoami}() method only accepts a value, a string.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`,
+      this.#errGen(
+        ec,
+        r,
+        `You inputed: "${text}" as the parameter of the ${whoami}() method`,
+        c,
       );
     if (/^\s*$/.test(text))
-      throw new Error(
-        `\nKINGCHOP ERROR!\nERROR CODE: E02.\nREASON: The parameter of the method ${whoami}() is invalid.\nCAUSE: The parameter of the ${whoami}() method was an empty string.\nCORRECTION: The ${whoami}() method only accepts a value, a string.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`,
+      this.#errGen(
+        ec,
+        r,
+        `The parameter of the ${whoami}() method was an empty string`,
+        c,
       );
     if (args.length > 1)
-      throw new Error(
-        `\nKINGCHOP ERROR!\nERROR CODE: E02.\nREASON: The arguments of the method ${whoami}() is invalid.\nCAUSE: The arguments of the ${whoami}() method was more than 1.\nCORRECTION: The ${whoami}() method only accepts a value, a string, not multiple arguments.\nMORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`,
+      this.#errGen(
+        ec,
+        r,
+        `The arguments to the ${whoami}() method was more than 1`,
+        c + " Not multiple arguments",
       );
     if (this.lowcase) text = text.toLowerCase();
     return text;
+  }
+  #errGen(code, reason, cause, correct) {
+    throw new Error(
+      `\nKINGCHOP ERROR!\nERROR CODE: ${code}.\nREASON: ${reason}.\nCAUSE: ${cause}.\nCORRECTION: ${correct}.\nMORE INFO: Check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.`,
+    );
   }
   #returnMan(text, status) {
     //helps in returning text, changing status and text formats.
@@ -738,7 +823,7 @@ class Kingchop {
     else return result;
   }
   #enclosersStyle() {
-    return /\(.+?\)|((^(\'.+?\'))|((?<=\s)\'.+?\'))|\".+?\"|\*.+?\*|\{.+?\}|\<.+?\>|\[.+?\]|((^(\‘.+?\’))|((?<=\s)\‘.+?\’))|\„.+?\„|\“.+?\”|\‹.+?\›|\«.+?\»/g; /*' ’ ′ single quotes are specialized so not to do bad on stuffs like, don't, o’ clock*/
+    return /\(.+?\)|((^(\'.+?\'))|((?<=\s)\'.+?\'))|\".+?\"|\*.+?\*|\{.+?\}|\<.+?\>|\[.+?\]|((^(\‘.+?\’))|((?<=\s)\‘.+?\’))|\„.+?\��|\“.+?\”|\‹.+?\›|\«.+?\»/g; /*' ’ ′ single quotes are specialized so not to do bad on stuffs like, don't, o’ clock*/
     // /\s\([^\)]+\)|\s\'.+\'|\s\".+\"|\s\*.+\*|\s\{.+\}|\s\<.+\>|\s\[.+\]|\s\`.+\`|\s\″.+\″|\s\′.+\′|\s\‘.+\’|\s\„.+\„|\s\“.+\”|\s\‹.+\›|\s\«.+\»/gm //test01 Experiment
   }
   #attachEnc(text, status) {

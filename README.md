@@ -250,15 +250,15 @@ console.log(chopper2.toSentence(string)); //results below
 
 ```
 
-**Note**: it's difficult to detect enclosers like `"", ''`, which starts and ends with same character. `“”` is detected properly, but `‘’` which is multipurpose is an extra layer of difficulty, because it can be used as quotes, used to indicate shorten words, like: `don’t, ol’, rock ’n’ roll`. This creates a lot of imbalances.
+**Note**: it's difficult to detect enclosers like `"", ''`, which starts and ends with same character. Also, `“”` is detected properly, but `‘’` which is multipurpose is an extra layer of difficulty, because it can be used as quotes, used to indicate shorten words, like: `don’t, ol’, rock ’n’ roll`. This creates a lot of imbalances.
 
-As of the **Aurora, v1.1.0** update, the extraction function built at **v1.0.6**, for enclosers of diffrent opening and closing characters (safe-enclosers), like **(), [], {}**, has been utilized.
+As of the **Aurora, v1.1.0** update, the extraction function built at **v1.0.6**, for enclosers of different opening and closing characters (safe-enclosers), like `(), [], {}`, has been utilized.
 
-Due to this update, Kingchop can handle nests of safe-enclosers detected. However, this multipurpose quotes and same char enclosers, **‘’, '', ""**, remain a problem.
+Due to this update, Kingchop can handle nests of safe-enclosers detected. However, this multipurpose quotes and same char enclosers, `‘’, '', ""`, remain a problem.
 
 I made a decision to only detect safe-enclosers, and this function would revert to default method, if imbalances in the safe-enclosers are found.
 
-The issue where enclosers of same characters (for start and end, like '', "", ``) can't be accurately detected, and may not be resolved. No function has been implemented yet.
+The issue where enclosers of same characters (for start and end, like `'', "", ```) can't be accurately detected, and may not be resolved. No function has been implemented yet. :(
 
 ---
 
@@ -617,7 +617,7 @@ Error:
 KINGCHOP ERROR!
 ERROR CODE: E01.
 REASON: Invalid Parameter Value.
-CAUSE: You inputed: "wrong value" in the returnStatus options of the Kingchop Instance.
+CAUSE: You inputed: "wrong value" (string), in the returnStatus option of the Kingchop instance.
 CORRECTION: Required value is true or false.
 MORE INFO: For more information, check the documentation of Kingchop at: https://github.com/victoryosiobe/kingchop#README.md.
 ```
@@ -626,7 +626,7 @@ Now, lets hit some of the error codes.
 
 **E01**: Indicates an option value of the kingchop initializer or instance is not appropriate.
 
-**E02**: Indicates argument(s) of a method was invalid, and numbers of arguments required is exceeded.
+**E02**: Indicates argument(s) of a method was invalid, or numbers of arguments required is exceeded.
 
 **E03**: Indicates there are unrequired number of arguments for the Kingchop initializer or instance.
 
@@ -661,7 +661,7 @@ console.log(chopper.correctText(string)); // 'how would you do that .par..!!'
 
 # Thanks
 
-**Thank y'all for your support and majorly, other open-sources out there.**
+**Thank y'all for your support, thanks to other open-sources out there.**
 
 # Support
 
