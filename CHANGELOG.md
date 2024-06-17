@@ -1,5 +1,9 @@
 **Init Log at v 1.0.5.......**
 
+# v1.1.2 (Aurora)
+
+- Dynamic requiring is considered a red flag. I have gotten it fixed.
+
 # v1.1.1 (Aurora)
 
 - Fixed bug of kingchop not strongly detecting bad parameters.

@@ -8,15 +8,16 @@ const {
   hNextValueFn,
   hEscaper,
 } = require("./helper.js");
-const p = "mod";
-const sen = require(`./${p}/sen.js`);
-const ssen = require(`./${p}/ssen.js`);
-const word = require(`./${p}/word.js`);
-const para = require(`./${p}/para.js`);
-const correct = require(`./${p}/correct.js`);
-const check = require(`./${p}/check.js`);
-const except = require(`./${p}/except.js`);
-const grav = require(`./${p}/grav.js`);
+const {
+  sen,
+  ssen,
+  word,
+  para,
+  correct,
+  check,
+  except,
+  grav,
+} = require("./mod");
 class Kingchop {
   constructor(options) {
     this.showDelimeters = true;
