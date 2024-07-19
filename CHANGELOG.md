@@ -1,8 +1,15 @@
 **Init Log at v 1.0.5.......**
 
+# v1.2.0 (Syzygy)
+
+- Fixed issue with enclosers detection.
+- For ease in scaling and development. I split most (important huge) methods across in the `utils` folder. Happy dev, happy you. :I
+- Improved Error detections and logs.
+- Updated `README.md`, removing typos, and making it easier to read implementing hierarchy.
+
 # v1.1.2 (Aurora)
 
-- Dynamic requiring is considered a red flag. I have gotten it fixed.
+- A lot of dynamic requires is considered a red flag. I have at least resolved where possible.
 
 # v1.1.1 (Aurora)
 

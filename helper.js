@@ -1,3 +1,4 @@
+"use strict";
 function hAdvancedEnclosersExtract(str) {
   const openErs = "[\\(\\[\\{“«‹<]"; //the opening character of the enclosers, you can add more
   const closeErs = "[\\)\\]\\}”»›>]"; //the closing ones
