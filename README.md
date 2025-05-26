@@ -575,7 +575,7 @@ Apart from numbers, between words single quotes, like (' or ’), other characte
 
 ### **`toSubSentence(<string>)`**
 
-This method chops text into sub sentences arrays. Sub sentences delimeters are ':,;', some others, and sentences delimeters too are used. Yes, enclosers are counted as sub sentences. It will use those parameters for initializing, to offsets rules guiding it. It's going to be a standard method of **kingchop**.
+This method chops text into sub sentences arrays. Sub sentences delimeters are `:,;`, some others, and sentences delimeters too are used. Yes, enclosers are counted as sub sentences. It will use those parameters for initializing, to offsets rules guiding it. It's going to be a standard method of **kingchop**.
 
 **Example Of Usage**:
 

@@ -139,6 +139,6 @@ module.exports = Kingchop;
 Next Fixes:
 toSentence: is not tokenizing properly. Eg: text = '1. Play. 2. Don't write 3. Jump around.'
 toWord: find way, so toWord will not leave something like "don't'you" unbroken.
-*/
 
-/*Is startIndex worth in the codebase? we just order everything according to index, so how why need to add the length of the match to obtain new index*/
+But you see, trying to fix them is pointless, and often create other issues and conflicts. It's best to leave them as is unfortunately.
+*/

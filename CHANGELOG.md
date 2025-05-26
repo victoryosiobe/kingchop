@@ -3,8 +3,9 @@
 # v1.2.0 (Syzygy)
 
 - Fixed issue with enclosers detection.
-- For ease in scaling and development. I split most (important huge) methods across in the `utils` folder. Happy dev, happy you. :I
+- For ease in scaling and development. I split most (important huge) methods across in the `utils` folder. Happy dev, happy you. :)
 - Improved Error detections and logs.
+- Standardized Error Codes.
 - Updated `README.md`, removing typos, and making it easier to read implementing hierarchy.
 
 # v1.1.2 (Aurora)
