@@ -638,8 +638,6 @@ The `correctText()` method, takes in a string as a parameter and tries to correc
 
 It removes unnecessary spaces between words and delimeters, and delimeters and delimeters.
 
-It is being advancing on every updates.
-
 **For example**: It can turn this string `how would you do that                .par.     .    !     !`, to `how would you do that .par..!!`
 
 **Example of Usage**:
@@ -655,7 +653,7 @@ console.log(chopper.correctText(string)); // 'how would you do that .par..!!'
 
 ## **Coming Soon**
 
-1. **Sub Word Tokenization.**—with a light weight model by me, and zero dependencies.
+1. **Sub Word Tokenization** — with a light weight model, and zero dependencies.
 2. **Word Ranking.**
 3. **Sentence Ranking.**
 
