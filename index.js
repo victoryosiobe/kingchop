@@ -1,1 +1,1 @@
-module.exports = require('./kingchop.js')
+module.exports = require("./kingchop.js");

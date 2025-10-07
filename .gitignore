@@ -3,4 +3,4 @@ todo.md
 *.lock
 *.log
 node_modules
-io_backend.js
+__tests__
