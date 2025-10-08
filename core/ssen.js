@@ -1,4 +1,4 @@
-const { hRefine, hEscaper } = require("../helper.js");
+const { hRefine, hEscaper } = require("../utils/helper");
 
 const toSubSentence = function (text = "") {
   let status = false;

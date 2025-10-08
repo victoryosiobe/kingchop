@@ -1,4 +1,4 @@
-const { hRefine } = require("../helper.js");
+const { hRefine } = require("../utils/helper");
 
 const correctText = function (text = "") {
   let status = false;

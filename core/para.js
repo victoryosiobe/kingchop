@@ -1,4 +1,4 @@
-const { hRefine } = require("../helper.js");
+const { hRefine } = require("../utils/helper");
 const toParagraph = function (text = "") {
   let status = false;
   const para = this.passParaCore(text);

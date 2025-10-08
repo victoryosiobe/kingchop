@@ -1,5 +1,5 @@
 "use strict";
-const { hPassPCore, hAttachEnclosers } = require("./helper.js");
+const { hPassPCore, hAttachEnclosers } = require("./utils/helper");
 const {
   sen,
   ssen,
@@ -10,7 +10,7 @@ const {
   except,
   grav,
   mcheck,
-} = require("./utils");
+} = require("./core/index");
 
 class Kingchop {
   constructor(options) {
@@ -30,6 +30,7 @@ class Kingchop {
         addToExceptions,
         useExceptions,
         showDelimeters,
+        lowercase,
         lowcase,
         actOnEnclosers,
         correct,
@@ -39,7 +40,7 @@ class Kingchop {
       if (addToExceptions) this.addExcepts = addToExceptions;
       if (useExceptions) this.useExceptions = useExceptions;
       if (showDelimeters === false) this.showDelimeters = showDelimeters;
-      if (lowcase) this.lowcase = lowcase;
+      if (lowcase || lowercase) this.lowcase = lowcase;
       if (actOnEnclosers) this.actOnEnclosers = actOnEnclosers;
       if (correct === false) this.correct = correct;
       if (gravity === false) this.gravity = gravity;
@@ -124,7 +125,7 @@ class Kingchop {
 }
 module.exports = Kingchop;
 /*
-    ✅✅ lowcase: default false 
+    ✅✅ lowercase: default false 
     ✅✅ addToExceptions: default null: adds more exceptions to the exceptions array after filtering possible duplicates
     ✅✅ useExceptions: default null: use only provided exceptions
     ✅✅ actOnEnclosers: default false: to make match and possibly break in enclosers like (), ''...
@@ -132,7 +133,7 @@ module.exports = Kingchop;
     ✅✅ correct: default true: tries to correct the text
     ✅✅ returnStatus: default false: returns an output in object form. {value: 'Whatever was processed', status: true or false (if anything was done or not)
     ✅✅ gravity: default true: uses an algorithm to detect what should be a sentence or not.
-    options = {addExceptions: ['co', 'inc', 'ltd', 'org'],  useExceptions: ['org', 'inc', 'ltd'], showDelimeters: false, lowcase: true}
+    options = {addExceptions: ['co', 'inc', 'ltd', 'org'],  useExceptions: ['org', 'inc', 'ltd'], showDelimeters: false, lowercase: true}
 */
 
 /*
