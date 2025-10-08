@@ -2,7 +2,7 @@ const {
   hEscaper,
   hRefine,
   hAdvancedEnclosersExtract,
-} = require("../helper.js");
+} = require("../utils/helper");
 const toSentence = function (text = "") {
   let status = true;
   if (this.correct) text = this.publicMethods(text, "correctText"); //correct text from here

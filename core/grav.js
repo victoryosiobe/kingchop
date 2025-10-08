@@ -1,4 +1,4 @@
-const { hNextValueFn } = require("../helper.js");
+const { hNextValueFn } = require("../utils/helper");
 
 const gravityFn = function (text, num) {
   let isNowBackToString = false;
