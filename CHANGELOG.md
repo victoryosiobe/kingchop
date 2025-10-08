@@ -1,10 +1,19 @@
 **Init Log at v 1.0.5.......**
 
+# v2.0.2
+
+- updated `LICENSE`.
+- Improved File Structures, temoving dynamic imports totally, improving inital load times.
+- `README.md` keenly revisted, and updated.
+
+# v2.0.1
+
+- `LICENSE` added.
+
 # v2.0.0
 
 - Fixed Under-the-hood bug of not exporting Kingchop correctly by default. Removing `io_backend.js`file used for tests, and using standard methods to test.
 - `README.md` updated.
-- `LICENSE` added.
 
 # v1.2.0 (Syzygy)
 
