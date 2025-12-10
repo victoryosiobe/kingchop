@@ -4,7 +4,7 @@
   "description": "A text tokenizing library that handles strings, by tokenizing them into arrays, depending on intended format, like sentences, sub sentences, paragraphs, words...",
   "main": "index.js",
   "scripts": {
-    "dev": "node __tests__/io_test.js"
+    "dev": "nodemon __tests__/io_test.js"
   },
   "repository": "git+https://github.com/victoryosiobe/kingchop.git",
   "keywords": [

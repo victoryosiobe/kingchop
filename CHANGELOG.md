@@ -1,9 +1,9 @@
-**Init Log at v 1.0.5.......**
+**Init Log at v1.0.5.......**
 
 # v2.0.2
 
 - updated `LICENSE`.
-- Improved File Structures, temoving dynamic imports totally, improving inital load times.
+- Improved File Structures, removing dynamic imports totally, improving inital load times.
 - `README.md` keenly revisted, and updated.
 
 # v2.0.1

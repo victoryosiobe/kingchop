@@ -40,7 +40,7 @@ class Kingchop {
       if (addToExceptions) this.addExcepts = addToExceptions;
       if (useExceptions) this.useExceptions = useExceptions;
       if (showDelimeters === false) this.showDelimeters = showDelimeters;
-      if (lowcase || lowercase) this.lowcase = lowcase;
+      if (lowcase || lowercase) this.lowcase = lowcase; //supports alias
       if (actOnEnclosers) this.actOnEnclosers = actOnEnclosers;
       if (correct === false) this.correct = correct;
       if (gravity === false) this.gravity = gravity;
