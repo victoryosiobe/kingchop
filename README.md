@@ -31,7 +31,7 @@
 
 # **KINGCHOP**
 
-**Kingchop** is a JavaScript english-based library for tokenizing text. It uses vast rules for tokenizing, and you can adjust them with ease.
+**Kingchop** is an english-based javaScript library for tokenizing text. It uses vast rules for tokenizing, and you can adjust them with ease.
 
 ## **Why Use Kingchop?**
 
@@ -139,7 +139,7 @@ const chopper = new Kingchop({lowcase: true, addToExceptions: ['org', 'inc', 'co
 
 **_Below are the default settings, with purposes, usage, accepted values and examples:_**
 
-### **lowcase**
+### **lowcase OR lowercase**
 
 **Default**: false.
 

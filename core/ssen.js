@@ -2,7 +2,7 @@ const { hRefine, hEscaper } = require("../utils/helper");
 
 const toSubSentence = function (text = "") {
   let status = false;
-  const stepsRes = {};
+  const statusLog = [];
   this.gravity = false; //turn off if on. We don't need it
   const sen = this.toSentence(text);
   if (this.returnStatusPass()) {
@@ -10,6 +10,7 @@ const toSubSentence = function (text = "") {
     if (sen.status === true) status = true; //if sentence array was produced, this is also part of this method. Not just the sub-sentence-processor. Hence, it influences decisions
   } else text = sen;
   const processSubSentenceTokens = (text) => {
+    const stepsRes = {};
     // ADD TRAILING DELIMITERS FINDER TOO
     let textState, escapeValue;
     const nativeDeli =
@@ -88,7 +89,7 @@ const toSubSentence = function (text = "") {
       step3();
       step4();
     })();
-    return text;
+    return { value: text, status: stepsRes.m4 };
     //we break on :|;|,|""|''|``|()|“”|„„|«»|‘’|‚‚|‹›|′′|″″|{}|[]|||
     //UPHEADEND
   };
@@ -96,14 +97,23 @@ const toSubSentence = function (text = "") {
     const para = this.passParaCore(text);
     text = para.value;
     const paraStat = para.status;
+    statusLog.push(paraStat);
     if (paraStat) {
-      const pileUpArrays = text.map((v) => processSubSentenceTokens(v));
+      const pileUpArrays = text.map((v) => {
+        const res = processSubSentenceTokens(v);
+        statusLog.push(res.status);
+        return res.value;
+      });
       text = pileUpArrays.flat();
-    } else text = processSubSentenceTokens(text);
+    } else {
+      const res = processSubSentenceTokens(text);
+      statusLog.push(res.status);
+      text = res.value;
+    }
     text = hRefine(text);
   })();
 
-  status = status || stepsRes.m4;
+  status = statusLog.some((v) => v === true);
   /* ⛓️   if (this.actOnEnclosers) { //change to === false
           console.log(text, 'entry into attachEnc')
           const textPress = this.attachEnc(text, status)
