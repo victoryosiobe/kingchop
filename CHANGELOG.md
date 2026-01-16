@@ -1,9 +1,15 @@
-**Init Log at v 1.0.5.......**
+**Init Log at v1.0.5.......**
+
+# v2.0.3
+
+- Enforced `lowercase` alias of `lowcase` in the Kingchop intializer options.
+- Critical status inconsistency issue fixed across all main methods. All reported status are now correct.
+- `README.md` touched.
 
 # v2.0.2
 
-- updated `LICENSE`.
-- Improved File Structures, temoving dynamic imports totally, improving inital load times.
+- Updated `LICENSE`.
+- Improved File Structures, removing dynamic imports totally, improving inital load times.
 - `README.md` keenly revisted, and updated.
 
 # v2.0.1
@@ -44,7 +50,7 @@
 # v1.0.6 (Aurora)
 
 - Fixed `levelUp` option not working by default.
-- changed `levelUp` method to `gravity` for easy learning.
+- Changed `levelUp` method to `gravity` for easy learning.
 - Fixed `returnStatus` status property, that was negated by the `levelUp` option, and let's just say overally.
 - Added the `toSubSentence` method.
 - Improved `toWord` method vastly.

@@ -2,8 +2,9 @@ const { hRefine, hEscaper } = require("../utils/helper");
 const toWord = function (text = "") {
   //mark
   let status = false;
-  const stepsRes = {};
+  const statusLog = [];
   const processWordTokens = (text) => {
+    const stepsRes = {};
     let textState, escapeValue;
     const regSpaces = /\s/g;
     const regNonWords = /[^\sA-Za-z0-9]/g;
@@ -64,19 +65,29 @@ const toWord = function (text = "") {
       step2();
       step3();
     })();
-    return text;
+    return { value: text, status: stepsRes.m3 };
   };
   (() => {
     const para = this.passParaCore(text);
     text = para.value;
     const paraStat = para.status;
+    statusLog.push(paraStat);
     if (paraStat) {
-      const pileUpArrays = text.map((v) => processWordTokens(v));
+      const pileUpArrays = text.map((v) => {
+        const res = processWordTokens(v);
+        statusLog.push(res.status);
+        return res.value;
+      });
       text = pileUpArrays.flat();
-    } else text = processWordTokens(text);
+    } else {
+      const res = processWordTokens(text);
+      statusLog.push(res.status);
+      text = res.value;
+    }
     text = hRefine(text);
   })();
-  status = stepsRes.m3;
+
+  status = statusLog.some((v) => v === true);
   return this.returnMan(text, status);
 };
 

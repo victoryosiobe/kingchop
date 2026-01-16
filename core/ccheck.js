@@ -14,6 +14,7 @@ const constructorCheck = function (args) {
       useExceptions,
       showDelimeters,
       lowcase,
+      lowercase,
       actOnEnclosers,
       correct,
       gravity,
@@ -76,6 +77,18 @@ const constructorCheck = function (args) {
         ec,
         r,
         `${ca} "${lowcase}" (${typeof lowcase}), ${idT} ${ca2}`,
+        c2,
+      );
+    }
+    if (
+      lowercase !== undefined &&
+      !(lowercase === true || lowercase === false)
+    ) {
+      const idT = "in the lowercase";
+      this.errGen(
+        ec,
+        r,
+        `${ca} "${lowercase}" (${typeof lowercase}), ${idT} ${ca2}`,
         c2,
       );
     }

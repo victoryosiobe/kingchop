@@ -17,7 +17,7 @@
 ## **Quick Links**
 
 - [Kingchop ⚔️](#kingchop)
-- [Why Even Use Kingchop?](#why-should-i-use-kingchop)
+- [Why Use Kingchop?](#why-should-i-use-kingchop)
 - [How To Use?](#how-to-use)
 - [Parameters](#parameters)
   - [Options](#options)
@@ -31,9 +31,9 @@
 
 # **KINGCHOP**
 
-**Kingchop** is a JavaScript english-based library for tokenizing text. It uses vast rules for tokenizing, and you can adjust them with ease.
+**Kingchop** is an english-based javaScript library for tokenizing text. It uses vast rules for tokenizing, and you can adjust them with ease.
 
-## **Why Should I Use Kingchop?**
+## **Why Use Kingchop?**
 
 Kingchop is built for **flexibility**, **stability**, **ease** and **simplicity** unlike other libraries. Not just another bloat to `node_modules` or a regular tokenizer.
 
@@ -67,19 +67,19 @@ You decide if output is to be in lowcase, or if delimeters like `., !, ?` should
 
 Firstly, you have to install Kingchop. In a cli, do:
 
-```node.js
+```bash
 npm install kingchop
 ```
 
 If you use yarn, then:
 
-```node.js
+```bash
 yarn add kingchop
 ```
 
 If you're experiencing an error, related to SYMLINK, do:
 
-```node.js
+```bash
 yarn add kingchop --no-bin-links
 ```
 
@@ -139,7 +139,7 @@ const chopper = new Kingchop({lowcase: true, addToExceptions: ['org', 'inc', 'co
 
 **_Below are the default settings, with purposes, usage, accepted values and examples:_**
 
-### **lowcase**
+### **lowcase OR lowercase**
 
 **Default**: false.
 
@@ -654,10 +654,11 @@ console.log(chopper.correctText(string)); // 'how would you do that .par..!!'
 2. **Word Ranking.**
 3. **Sentence Ranking.**
 4. **Proper Handling Of Emojis.**
+<!-- 5. **Update on `correctText` method to correct typos in texts too.** -->
 
 ## **Thanks**
 
-**Thank y'all for your support, thanks to other open-sources out there.**
+**Thank y'all for your support. Thanks to other open-sources out there.**
 
 ## **Support**
 

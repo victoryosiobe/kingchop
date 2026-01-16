@@ -4,9 +4,11 @@ const {
   hAdvancedEnclosersExtract,
 } = require("../utils/helper");
 const toSentence = function (text = "") {
-  let status = true;
+  let status = false;
+  const statusLog = [];
   if (this.correct) text = this.publicMethods(text, "correctText"); //correct text from here
   const processSentenceTokens = (text) => {
+    const stepsRes = {};
     const masterState = [];
     const regDelimetersExt =
       /(\.{2,}\s+|\!{2,}\s+|\?{2,}\s+)|(\.\s+|\!\s+|\?\s+)/g; // match delimiters when space comes after
@@ -126,7 +128,7 @@ const toSentence = function (text = "") {
           text = text.split(splitIdenti); //split on the identifier
         }
         text = hRefine(text); // clean up
-        status = m1 || false;
+        stepsRes.m1 = m1;
       })();
     })(); //split layer
 
@@ -155,25 +157,36 @@ const toSentence = function (text = "") {
           : void 0)();
     })(); //unescape layer
 
-    return text;
+    return { value: text, status: stepsRes.m1 };
   };
   (() => {
     const para = this.passParaCore(text);
     text = para.value;
     const paraStat = para.status;
+    statusLog.push(paraStat);
     if (paraStat) {
-      const pileUpArrays = text.map((v) => processSentenceTokens(v));
+      const pileUpArrays = text.map((v) => {
+        const res = processSentenceTokens(v);
+        statusLog.push(res.status);
+        return res.value;
+      });
       text = pileUpArrays.flat();
-    } else text = processSentenceTokens(text);
+    } else {
+      const res = processSentenceTokens(text);
+      statusLog.push(res.status);
+      text = res.value;
+    }
     text = hRefine(text);
   })();
+
   /* ⛓️ console.log(text, hAttachEnclosers(text), 'hallo').  */
   if (this.gravity && this.showDelimeters !== false) {
     const res = this.gravityFn(text, this.gravity);
     text = res.value;
-    status = res.stat;
+    statusLog.push(res.stat);
   }
 
+  status = statusLog.some((v) => v === true);
   return this.returnMan(text, status);
 };
 
