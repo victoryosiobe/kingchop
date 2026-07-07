@@ -13,8 +13,7 @@ const toSubSentence = function (text = "") {
     const stepsRes = {};
     // ADD TRAILING DELIMITERS FINDER TOO
     let textState, escapeValue;
-    const nativeDeli =
-      /(\:{2,}|\;{2,}|\,{2,}|\s(\-{2,})|\s(\—{2,})|\s(·{2,}))|(\:|\;|\,|\s\-|\s\—|\s·)/g;
+    const nativeDeli = /([:;,])+|(\s[-—·]+)/g;
     const enclosersDeli = this.enclosersStyle();
     const subIdenti = "§§§§§§§§§§§↑↑↑↑↑←@→↑↑↑↑↑§§§§§§§§§§§";
     textState = hEscaper(text, subIdenti, "begin"); //Escapes subIdenti if found in text.

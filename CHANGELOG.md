@@ -1,8 +1,16 @@
 **Init Log at v1.0.5.......**
 
+# v2.0.4
+
+- Critical crash on quotes with delimiters fixed.
+- Fixed enclosers issue with output text corrupting with `undefined` where enclosers is ought to be replaced. This occured when enclosers were unbalanced.
+- `actOnEnclosers` option seems to be disregarded and stucked on true, however this was due to an underlying issue. Now fixed.
+- the advanced enclosers extractor function does its job, but this time, it then hands over to default enclosers find methods. This makes a better coverage for quotes too, and unbalanced enclosers.
+- Optimized some reg expressions. Operations faster than ever.
+
 # v2.0.3
 
-- Enforced `lowercase` alias of `lowcase` in the Kingchop intializer options.
+- Enforced `lowercase` alias of `lowcase` in the Kingchop initializer options.
 - Critical status inconsistency issue fixed across all main methods. All reported status are now correct.
 - `README.md` touched.
 
@@ -43,7 +51,7 @@
 
 # v1.1.0 (Aurora)
 
-- Added the advannced enclosers extractor function.
+- Added the advanced enclosers extractor function.
 - Updated `README.md`.
 - Set folder for modularization, for easy development, for me. :)
 

@@ -10,13 +10,11 @@ const toSentence = function (text = "") {
   const processSentenceTokens = (text) => {
     const stepsRes = {};
     const masterState = [];
-    const regDelimetersExt =
-      /(\.{2,}\s+|\!{2,}\s+|\?{2,}\s+)|(\.\s+|\!\s+|\?\s+)/g; // match delimiters when space comes after
+    const regDelimetersExt = /(\.+|\!+|\?+)\s+/g; // match delimiters when space comes after
     const regIgnoreEnclosers = this.enclosersStyle(); // /\s\([^\)]+\)|\s\'.+\'|\s\".+\"|\s\*.+\*|\s\{.+\}|\s\<.+\>|\s\[.+\]|\s\`.+\`|\s\″.+\″|\s\′.+\′|\s\‘.+\’|\s\„.+\„|\s\“.+\”|\s\‹.+\›|\s\«.+\»/gm //test01 Experiment
-    const regDelimetersExtInQuotes =
-      /((\.{2,}\s*|\!{2,}\s*|\?{2,}\s*)|(\.\s*|\!\s*|\?\s*))(”|")$/g;
-    const ellipsReg = /((?<=[^\s])\.{3,})(?!$)|(\.{3,}(?=[^\s]))(?!$)/g;
-    const numbListFormReg = /^\s*\d+\s*\.\s+/g; //matches digits followed by period on every line beginning
+    const regDelimetersExtInQuotes = /(\.+|\!+|\?+)\s*(”|")$/g; // Matches trailing sentence-ending punctuation (. ! ?) inside a closing double quote (" or ”) at the end of the string
+    const ellipsReg = /(?<!\s)\.{3,}(?!\s|$)/g; // Matches 3+ periods (ellipsis) embedded in text, requiring no space before and no space/end-of-string after
+    const numbListFormReg = /^\s*\d+\s*\.\s+/g; //matches digits followed by period on every line beginning. passParaCore already makes sure that only 1 sentence is processed at a time. Then it aggregates it. Else, I would have added a multiline Regex flag.
     const exceptionsList = this.exceptionsList("with_cores");
     const mainIdenti = "&∆×§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§×∆&";
     const splitIdenti = "-&∆×§§§§-§§§§§§§§§+§§§§§§§§§§-§§§§§§§×∆&-";
@@ -26,8 +24,15 @@ const toSentence = function (text = "") {
       mainIdentiEscapeValue,
       splitIdentiEscapeValue;
 
+    function storeState(match, startIndex) {
+      const index = text.indexOf(match, startIndex);
+      startIndex = index + match.length;
+      masterState.push([match, index]);
+      return startIndex;
+    }
+
     const section1 = (() => {
-      //escape layer
+      //escape layer; for mainIdenti that may be found in text
       const step1 = (() => {
         mainIdentiTextState = hEscaper(text, mainIdenti, "begin"); //Escapes mainIdenti if found in text.
         if (mainIdentiTextState.status === false) mainIdentiTextState = false;
@@ -53,9 +58,7 @@ const toSentence = function (text = "") {
           //test if match on numbListForm: It checks if sentence starts with numbers, followed by a fullstop
           let startIndex = 0;
           text = text.replace(numbListFormReg, (match) => {
-            const index = text.indexOf(match, startIndex);
-            startIndex = index + match.length;
-            masterState.push([match, index]);
+            startIndex = storeState(match, startIndex);
             return mainIdenti;
           });
         }
@@ -65,9 +68,7 @@ const toSentence = function (text = "") {
           //test if match on numbListForm: It checks if sentence starts with numbers, followed by a fullstop
           let startIndex = 0;
           text = text.replace(exceptionsList, (match) => {
-            const index = text.indexOf(match, startIndex);
-            startIndex = index + match.length;
-            masterState.push([match, index]);
+            startIndex = storeState(match, startIndex);
             return mainIdenti;
           });
         }
@@ -78,34 +79,34 @@ const toSentence = function (text = "") {
           const extractedEnclosers = hAdvancedEnclosersExtract(text);
           if (extractedEnclosers) {
             extractedEnclosers.map((v) => {
-              storeState(v, startIndex);
+              startIndex = storeState(v, startIndex);
+              text = text.replace(v, mainIdenti); //Replacing the extractedEnclosers with mainIdenti here
             });
-            return; //if ran, fail to run the other, below.  if fail, other runs.
+            //if ran, proceed to run the other, below.  if fail, other runs regardless.
+            //all enclosers found here have now been masked
+            //sooo, setting startIndex back to zero
+            startIndex = 0;
           }
+
+          //default encloser search
           text = text.replace(regIgnoreEnclosers, (match) => {
+            let identiCopy = mainIdenti;
             if (match.endsWith('"') || match.endsWith("”")) {
               regDelimetersExtInQuotes.lastIndex = 0; //reset regex state for correct testing
-              if (regDelimetersExtInQuotes.test(match))
-                mainIdenti += splitIdenti; //we would split on this identifier in section3
+              if (regDelimetersExtInQuotes.test(match)) {
+                identiCopy = mainIdenti + splitIdenti; //we would split on this identifier in section3. Early split identifications.
+              }
             }
-            storeState(match, startIndex);
+            startIndex = storeState(match, startIndex);
+            return identiCopy;
           });
-
-          function storeState(match, startIndex) {
-            const index = text.indexOf(match, startIndex);
-            startIndex = index + match.length;
-            masterState.push([match, index]);
-            return mainIdenti;
-          }
         }
       })();
       const step4 = (() => {
         if (ellipsReg.test(text)) {
           let startIndex = 0;
           text = text.replace(ellipsReg, (match) => {
-            const index = text.indexOf(match, startIndex);
-            startIndex = index + match.length;
-            masterState.push([match, index]);
+            startIndex = storeState(match, startIndex);
             return mainIdenti;
           });
         }
@@ -122,10 +123,10 @@ const toSentence = function (text = "") {
               regDelimetersExt,
               (match) => hRefine(match) + splitIdenti,
             );
-          text = text.split(splitIdenti); //split on the identifier
+          text = text.split(splitIdenti); //split on the identifier. Put here because there may be a splitIdenti from eslewhere not only for regDelimetersExt. If no split an array of full text is returned
         } else {
           if (m1) text = text.replace(regDelimetersExt, splitIdenti);
-          text = text.split(splitIdenti); //split on the identifier
+          text = text.split(splitIdenti); //split on the identifier. Put here because there may be a splitIdenti from eslewhere not only for regDelimetersExt. If no split an array of full text is returned
         }
         text = hRefine(text); // clean up
         stepsRes.m1 = m1;
@@ -137,6 +138,7 @@ const toSentence = function (text = "") {
       if (masterState.length !== 0) {
         masterState.sort((a, b) => a[1] - b[1]); //arrange based on index number (ascending order)
         for (let i = 0; i < text.length; i++) {
+          //after split layer text is now array regardless of a split or not
           const encryptMatch = text[i].match(new RegExp(mainIdenti, "g"));
           if (!encryptMatch) continue;
           for (let j = 0; j < encryptMatch.length; j++)

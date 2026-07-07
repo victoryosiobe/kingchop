@@ -4,3 +4,4 @@ todo.md
 *.log
 node_modules
 __tests__
+archive

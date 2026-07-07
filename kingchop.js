@@ -135,11 +135,3 @@ module.exports = Kingchop;
     ✅✅ gravity: default true: uses an algorithm to detect what should be a sentence or not.
     options = {addExceptions: ['co', 'inc', 'ltd', 'org'],  useExceptions: ['org', 'inc', 'ltd'], showDelimeters: false, lowercase: true}
 */
-
-/*
-Next Fixes:
-toSentence: is not tokenizing properly. Eg: text = '1. Play. 2. Don't write 3. Jump around.'
-toWord: find way, so toWord will not leave something like "don't'you" unbroken.
-
-But you see, trying to fix them is pointless, and often create other issues and conflicts. It's best to leave them as is unfortunately.
-*/
