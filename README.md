@@ -245,7 +245,7 @@ console.log(chopper.toSentence(string)); //"I feel it's harder to convert DC to 
 const chopper2 = new Kingchop({actOnEnclosers: true});
 console.log(chopper2.toSentence(string)); //results below
 /*[
-  "I feel it's harder to convert DC to AC, (through a standard inverter.",""
+  "I feel it's harder to convert DC to AC, (through a standard inverter.",
   'Unlike AC to DC that requires diodes and capacitors) Oh well, I need to rest from these eletronics.'
 ]*/
 
